@@ -51,16 +51,6 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <Fingerprint className="w-6 h-6 stroke-[2.5]" />
         </button>
 
-        <button
-          onClick={() => setActiveTab('academic_report')}
-          className={`flex flex-col items-center text-[11px] transition-colors ${
-            activeTab === 'academic_report' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <span className="text-base leading-none mb-0.5">📄</span>
-          <span>{swahiliMode ? 'Ripoti' : 'Report'}</span>
-        </button>
-
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('admin_portal')}

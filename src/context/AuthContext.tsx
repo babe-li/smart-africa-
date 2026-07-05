@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, BiometricStatus, SecurityEventLog, AdminAccount, UserMovementLog } from '../types';
-import { INITIAL_SECURITY_LOGS } from '../data/trustData';
+import { User, BiometricStatus, SecurityEventLog, AdminAccount, UserMovementLog, BiometricAttemptLog } from '../types';
+import { INITIAL_SECURITY_LOGS, INITIAL_BIOMETRIC_LOGS } from '../data/trustData';
 import { enrollRealFingerprint, verifyRealFingerprint, checkRealBiometricHardwareAvailable } from '../utils/webauthn';
 
 interface AuthContextType {
@@ -13,6 +13,8 @@ interface AuthContextType {
   authenticateWithFingerprint: () => Promise<boolean>;
   securityLogs: SecurityEventLog[];
   addSecurityLog: (log: Omit<SecurityEventLog, 'id' | 'timestamp'>) => void;
+  biometricAttemptLogs: BiometricAttemptLog[];
+  addBiometricAttemptLog: (log: Omit<BiometricAttemptLog, 'id' | 'timestamp'>) => void;
   swahiliMode: boolean;
   setSwahiliMode: (val: boolean) => void;
   trustScoreOverall: number;
@@ -150,6 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user?.fingerprintRegistered ? 'ready' : 'unregistered'
   );
   const [securityLogs, setSecurityLogs] = useState<SecurityEventLog[]>(INITIAL_SECURITY_LOGS);
+  const [biometricAttemptLogs, setBiometricAttemptLogs] = useState<BiometricAttemptLog[]>(INITIAL_BIOMETRIC_LOGS);
   const [swahiliMode, setSwahiliMode] = useState<boolean>(false);
   const [webAuthnLogs, setWebAuthnLogs] = useState<string[]>(['System initialized. WebAuthn platform ready.']);
   const [isHardwareSupported, setIsHardwareSupported] = useState<boolean | null>(null);
@@ -171,6 +174,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
     };
     setSecurityLogs(prev => [newLog, ...prev.slice(0, 49)]);
+  };
+
+  const addBiometricAttemptLog = (log: Omit<BiometricAttemptLog, 'id' | 'timestamp'>) => {
+    const now = new Date();
+    const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${now.toLocaleTimeString('en-US', { hour12: false })}`;
+    const newLog: BiometricAttemptLog = {
+      ...log,
+      id: 'bio-' + Math.random().toString(36).substring(2, 9),
+      timestamp: ts
+    };
+    setBiometricAttemptLogs(prev => [newLog, ...prev]);
   };
 
   const loginAsAdminDirectly = () => {
@@ -352,6 +366,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         detail: `Real Hardware WebAuthn FIDO2 fingerprint enrolled (${res.attestationType}). Raw ID: ${res.rawIdBase64?.substring(0, 16)}...`,
         payloadSnippet: `navigator.credentials.create() -> PublicKeyCredential ID: ${res.credentialId.substring(0, 24)}...`
       });
+      addBiometricAttemptLog({
+        userEmailOrId: user?.email || user?.name || 'usr-tz-01',
+        deviceInfo: navigator.userAgent.includes('Mobile') ? 'Mobile Hardware Biometric Sensor' : 'Desktop TPM 2.0 WebAuthn Sensor',
+        actionType: 'ENROLLMENT',
+        result: 'SUCCESS',
+        detail: `Enrolled WebAuthn Credential ID: ${res.credentialId.substring(0, 16)}...`,
+        attestationType: res.attestationType || 'packed'
+      });
       return true;
     } else {
       // Real sensor failed, canceled, or iframe restricted
@@ -362,6 +384,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         status: 'WARNED',
         detail: `Hardware sensor feedback: ${res.error}`,
         payloadSnippet: `navigator.credentials.create() exception or cancellation logged.`
+      });
+      addBiometricAttemptLog({
+        userEmailOrId: user?.email || user?.name || 'Guest Enclave User',
+        deviceInfo: navigator.userAgent.includes('Mobile') ? 'Mobile Biometric Enclave' : 'Desktop TPM Sensor',
+        actionType: 'ENROLLMENT',
+        result: 'FAILED',
+        detail: `Enrollment error/cancellation: ${res.error}`
       });
       return false;
     }
@@ -383,6 +412,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         detail: `Real Hardware WebAuthn signature verified! Sig: 0x${res.signatureBase64.substring(0, 20)}...`,
         payloadSnippet: `navigator.credentials.get() -> Assertion signature verified via hardware TPM.`
       });
+      addBiometricAttemptLog({
+        userEmailOrId: user?.email || user?.name || 'Authenticated Enclave User',
+        deviceInfo: navigator.userAgent.includes('Mobile') ? 'Mobile Fingerprint / FaceID' : 'Desktop TPM 2.0 Authenticator',
+        actionType: 'LOGIN_VERIFICATION',
+        result: 'SUCCESS',
+        detail: `Cryptographic assertion verified! Sig: 0x${res.signatureBase64.substring(0, 16)}...`
+      });
       setTimeout(() => {
         setBiometricStatus('ready');
       }, 2000);
@@ -395,6 +431,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         status: 'WARNED',
         detail: `Hardware verification feedback: ${res.error}`,
         payloadSnippet: `navigator.credentials.get() exception or cancellation logged.`
+      });
+      addBiometricAttemptLog({
+        userEmailOrId: user?.email || user?.name || 'Guest Enclave User',
+        deviceInfo: navigator.userAgent.includes('Mobile') ? 'Mobile Fingerprint / FaceID' : 'Desktop TPM Sensor',
+        actionType: 'LOGIN_VERIFICATION',
+        result: 'FAILED',
+        detail: `Verification rejected or canceled: ${res.error}`
       });
       return false;
     }
@@ -411,6 +454,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       authenticateWithFingerprint,
       securityLogs,
       addSecurityLog,
+      biometricAttemptLogs,
+      addBiometricAttemptLog,
       swahiliMode,
       setSwahiliMode,
       trustScoreOverall: 98,

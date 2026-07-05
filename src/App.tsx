@@ -13,7 +13,6 @@ import { BiometricModal } from './components/BiometricModal';
 import { AuthModal } from './components/AuthModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
-import { AcademicReportView } from './components/AcademicReportView';
 
 const MainApplication: React.FC = () => {
   const { user, swahiliMode, logUserMovement } = useAuth();
@@ -113,7 +112,6 @@ const MainApplication: React.FC = () => {
           />
         )}
         {activeTab === 'orders' && <OrdersView />}
-        {activeTab === 'academic_report' && <AcademicReportView />}
         {activeTab === 'admin_portal' && (
           <AdminPortalView
             products={products}

@@ -1,4 +1,4 @@
-import { TamMetric, SecurityEventLog } from '../types';
+import { TamMetric, SecurityEventLog, BiometricAttemptLog } from '../types';
 
 export const INITIAL_TAM_METRICS: TamMetric[] = [
   {
@@ -135,3 +135,57 @@ export const INITIAL_SECURITY_LOGS: SecurityEventLog[] = [
     payloadSnippet: 'authenticatorData: flags(ED+UP), signCount=13, verifiedECDSA_P256=true'
   }
 ];
+
+export const INITIAL_BIOMETRIC_LOGS: BiometricAttemptLog[] = [
+  {
+    id: 'bio-01',
+    timestamp: '2026-07-05 14:12:05',
+    userEmailOrId: 'amani.shirima@smarttrade.tz',
+    deviceInfo: 'Android Biometric Sensor (Samsung S24 / Chrome 126)',
+    actionType: 'ENROLLMENT',
+    result: 'SUCCESS',
+    detail: 'Hardware FIDO2 WebAuthn credential successfully enrolled inside secure enclave.',
+    attestationType: 'packed'
+  },
+  {
+    id: 'bio-02',
+    timestamp: '2026-07-05 14:25:18',
+    userEmailOrId: 'grace.mtei@smarttrade.tz',
+    deviceInfo: 'Apple Touch ID / Face ID (iPhone 15 Pro / Safari 17.5)',
+    actionType: 'LOGIN_VERIFICATION',
+    result: 'SUCCESS',
+    detail: 'ECDSA P-256 cryptographic challenge assertion verified.',
+    attestationType: 'apple-anonymous'
+  },
+  {
+    id: 'bio-03',
+    timestamp: '2026-07-05 14:48:42',
+    userEmailOrId: 'kelvin.john@smarttrade.tz',
+    deviceInfo: 'Windows Hello TPM Biometric (Dell XPS / Edge 125)',
+    actionType: 'CHECKOUT_AUTHORIZATION',
+    result: 'FAILED',
+    detail: 'Sensor timeout: User did not place fingerprint within 60s challenge window.',
+    attestationType: 'none'
+  },
+  {
+    id: 'bio-04',
+    timestamp: '2026-07-05 15:03:11',
+    userEmailOrId: 'neema.kazimoto@smarttrade.tz',
+    deviceInfo: 'Android Biometric Sensor (Google Pixel 8 / Chrome Mobile)',
+    actionType: 'LOGIN_VERIFICATION',
+    result: 'REJECTED',
+    detail: 'Fingerprint pattern mismatch detected by hardware enclave sensor.',
+    attestationType: 'none'
+  },
+  {
+    id: 'bio-05',
+    timestamp: '2026-07-05 15:11:55',
+    userEmailOrId: 'usr-tz-01 (Current Enclave User)',
+    deviceInfo: 'Universal Software TPM Enclave / WebAuthn Sensor',
+    actionType: 'LOGIN_VERIFICATION',
+    result: 'SUCCESS',
+    detail: 'Cryptographic challenge signed successfully via hardware/software TPM fallback.',
+    attestationType: 'webauthn.enclave.universal'
+  }
+];
+

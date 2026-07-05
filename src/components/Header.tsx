@@ -45,18 +45,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="bg-slate-900 text-slate-200 sticky top-0 z-40 shadow-2xl border-b border-slate-800">
-      {/* Topmost language bar */}
-      <div className="bg-slate-950 text-xs py-1.5 px-3 sm:px-6 flex justify-end items-center border-b border-slate-800">
-        {/* Language Toggle */}
-        <button
-          onClick={() => setSwahiliMode(!swahiliMode)}
-          className="flex items-center text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 text-blue-400 font-medium transition-colors"
-        >
-          <Globe className="w-3 h-3 mr-1.5 text-blue-400" />
-          {swahiliMode ? '🇹🇿 Kiswahili' : '🇬🇧 English / TSh'}
-        </button>
-      </div>
-
       {/* Main Header Bar */}
       <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-6">
         {/* Brand Logo */}
@@ -172,6 +160,17 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
+          {/* Language Toggle placed directly near Cart */}
+          <button
+            onClick={() => setSwahiliMode(!swahiliMode)}
+            className="flex items-center text-xs bg-slate-800/90 hover:bg-slate-700 px-3 py-2 rounded-full border border-slate-700 text-blue-400 font-bold transition-all shadow-md shrink-0 active:scale-95"
+            title={swahiliMode ? "Badilisha lugha kwenda Kiingereza" : "Switch language to Kiswahili"}
+          >
+            <Globe className="w-4 h-4 mr-1.5 text-blue-400 shrink-0" />
+            <span className="hidden sm:inline">{swahiliMode ? '🇹🇿 Kiswahili' : '🇬🇧 English'}</span>
+            <span className="sm:hidden">{swahiliMode ? '🇹🇿 SW' : '🇬🇧 EN'}</span>
+          </button>
+
           {/* Shopping Cart Button */}
           <button
             onClick={onOpenCart}
@@ -219,16 +218,6 @@ export const Header: React.FC<HeaderProps> = ({
           }`}
         >
           📦 {swahiliMode ? 'Oda na Risiti zangu' : 'Escrow Orders and Receipts'}
-        </button>
-        <button
-          onClick={() => setActiveTab('academic_report')}
-          className={`font-semibold flex items-center whitespace-nowrap transition-all px-3 py-1 rounded-lg ${
-            activeTab === 'academic_report'
-              ? 'text-white font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md shadow-blue-500/20 scale-105'
-              : 'text-amber-400 hover:text-white bg-amber-500/10 border border-amber-500/30'
-          }`}
-        >
-          📄 {swahiliMode ? 'Ripoti ya Kiakademia (.DOCX)' : 'Course 428 Report (.DOCX)'}
         </button>
         {user?.role === 'admin' && (
           <button

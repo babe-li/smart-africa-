@@ -25,7 +25,13 @@ import {
   Package,
   ShoppingBag,
   Tag,
-  BarChart3
+  BarChart3,
+  Fingerprint,
+  XCircle,
+  Clock,
+  Smartphone,
+  Monitor,
+  Terminal
 } from 'lucide-react';
 
 interface AdminPortalViewProps {
@@ -34,9 +40,12 @@ interface AdminPortalViewProps {
 }
 
 export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAddProduct }) => {
-  const { user, adminList, addAdminAccount, userMovements, swahiliMode } = useAuth();
+  const { user, adminList, addAdminAccount, userMovements, swahiliMode, biometricAttemptLogs } = useAuth();
   const { cart, totalItems, subtotalTzs, orders } = useCart();
-  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'tam_analyzer' | 'add_product' | 'add_admin'>('movements');
+  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'add_product' | 'add_admin'>('movements');
+
+  // Biometric log filter
+  const [biometricFilter, setBiometricFilter] = useState<string>('ALL');
 
   // Movement tracker filters
   const [movementSearch, setMovementSearch] = useState('');
@@ -211,6 +220,17 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
           >
             <ShieldCheck className="w-4 h-4" />
             <span>TCP Security Enclave</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('biometric_logs')}
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+              activeTab === 'biometric_logs' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
+            }`}
+          >
+            <Fingerprint className="w-4 h-4 text-emerald-400" />
+            <span>Biometric Attempt Logs ({biometricAttemptLogs?.length || 0})</span>
           </button>
           <button
             onClick={() => setActiveTab('tam_analyzer')}
@@ -532,10 +552,129 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
         </div>
       )}
 
-      {/* SUB-TAB: TCP SECURITY ENCLAVE & BIOMETRIC TELEMETRY */}
+      {/* SUB-TAB: TCP SECURITY ENCLAVE */}
       {activeTab === 'tcp_security' && (
         <div className="space-y-6">
           <TcpSecurityHub />
+        </div>
+      )}
+
+      {/* SUB-TAB: BIOMETRIC AUTHENTICATION ATTEMPT LOGS */}
+      {(activeTab === 'biometric_logs' || activeTab === 'tcp_security') && (
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30 uppercase tracking-wider">
+                  FIDO2 / WEBAUTHN HARDWARE ENCLAVE
+                </span>
+                <span className="text-xs text-slate-400 font-mono">256-Bit Cryptographic Telemetry</span>
+              </div>
+              <h3 className="text-lg font-bold text-white flex items-center mt-1.5">
+                <Fingerprint className="w-5 h-5 text-emerald-400 mr-2 shrink-0" />
+                <span>Biometric Authentication Attempt Logs</span>
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Detailed audit trail showing exact timestamp, device/sensor platform telemetry, and verification result for all biometric attempts occurring across the platform.
+              </p>
+            </div>
+
+            {/* Filter buttons */}
+            <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 self-start md:self-auto">
+              {(['ALL', 'SUCCESS', 'FAILED', 'REJECTED'] as const).map(res => (
+                <button
+                  key={res}
+                  onClick={() => setBiometricFilter(res)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                    biometricFilter === res
+                      ? res === 'SUCCESS' ? 'bg-emerald-600 text-white' : res === 'FAILED' || res === 'REJECTED' ? 'bg-rose-600 text-white' : 'bg-blue-600 text-white'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {res === 'ALL' ? 'All Attempts' : res}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/60 shadow-inner">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-950/90 text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-800">
+                  <th className="py-3.5 px-4 font-bold">Attempt ID</th>
+                  <th className="py-3.5 px-4 font-bold">Timestamp</th>
+                  <th className="py-3.5 px-4 font-bold">User Identity</th>
+                  <th className="py-3.5 px-4 font-bold">Action Type</th>
+                  <th className="py-3.5 px-4 font-bold">Device & Sensor Info</th>
+                  <th className="py-3.5 px-4 font-bold">Result (Success/Fail)</th>
+                  <th className="py-3.5 px-4 font-bold">Cryptographic Detail</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300 font-medium">
+                {biometricAttemptLogs
+                  ?.filter(l => biometricFilter === 'ALL' || l.result === biometricFilter)
+                  .map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3.5 px-4 font-mono text-slate-400 text-[11px]">{log.id}</td>
+                      <td className="py-3.5 px-4 font-mono text-slate-300 text-[11px] whitespace-nowrap">
+                        <div className="flex items-center space-x-1.5">
+                          <Clock className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <span>{log.timestamp}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-white font-semibold">{log.userEmailOrId}</td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          log.actionType === 'ENROLLMENT' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                          log.actionType === 'CHECKOUT_AUTHORIZATION' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                          'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                        }`}>
+                          {log.actionType}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center space-x-2">
+                          {log.deviceInfo.toLowerCase().includes('mobile') || log.deviceInfo.toLowerCase().includes('android') || log.deviceInfo.toLowerCase().includes('iphone') ? (
+                            <Smartphone className="w-4 h-4 text-slate-400 shrink-0" />
+                          ) : (
+                            <Monitor className="w-4 h-4 text-slate-400 shrink-0" />
+                          )}
+                          <span className="text-slate-200">{log.deviceInfo}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        {log.result === 'SUCCESS' ? (
+                          <span className="inline-flex items-center space-x-1.5 bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-500/30">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>SUCCESS</span>
+                          </span>
+                        ) : log.result === 'FAILED' ? (
+                          <span className="inline-flex items-center space-x-1.5 bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-full text-[11px] font-bold border border-rose-500/30">
+                            <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            <span>FAILED</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center space-x-1.5 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-500/30">
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            <span>REJECTED</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-slate-400 max-w-xs truncate" title={log.detail}>
+                        {log.detail}
+                      </td>
+                    </tr>
+                  ))}
+                {(!biometricAttemptLogs || biometricAttemptLogs.length === 0) && (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-slate-500 font-medium">
+                      No biometric authentication attempts recorded in enclave memory yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

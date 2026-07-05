@@ -119,3 +119,15 @@ export interface TamMetric {
   implementedFeatures: string[];
 }
 
+export interface BiometricAttemptLog {
+  id: string;
+  timestamp: string;
+  userEmailOrId: string;
+  deviceInfo: string;
+  actionType: 'ENROLLMENT' | 'LOGIN_VERIFICATION' | 'CHECKOUT_AUTHORIZATION';
+  result: 'SUCCESS' | 'FAILED' | 'REJECTED';
+  detail: string;
+  attestationType?: string;
+}
+
+
