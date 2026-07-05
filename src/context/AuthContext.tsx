@@ -362,7 +362,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logUserMovement('BIOMETRIC', `Hardware WebAuthn Enrollment Attempted -> Result: ${res.error}`);
       addSecurityLog({
         type: 'BIOMETRIC_AUTH',
-        status: 'WARNING',
+        status: 'WARNED',
         detail: `Hardware sensor feedback: ${res.error}`,
         payloadSnippet: `navigator.credentials.create() exception or cancellation logged.`
       });
@@ -395,7 +395,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logUserMovement('BIOMETRIC', `Hardware WebAuthn Verification Attempted -> Result: ${res.error}`);
       addSecurityLog({
         type: 'BIOMETRIC_AUTH',
-        status: 'WARNING',
+        status: 'WARNED',
         detail: `Hardware verification feedback: ${res.error}`,
         payloadSnippet: `navigator.credentials.get() exception or cancellation logged.`
       });

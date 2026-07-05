@@ -93,25 +93,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {mode === 'login' && (
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-4 flex items-center justify-between text-xs">
-              <div>
-                <span className="font-bold text-blue-400 block">👑 Admin Enclave Credential</span>
-                <span className="text-[10px] text-slate-300 font-mono">myovelababeli@gmail.com / cian2003</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setPhone('myovelababeli@gmail.com');
-                  handlePasswordChange('cian2003');
-                }}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] transition-colors shadow"
-              >
-                Autofill Admin
-              </button>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-3 text-xs">
             {mode === 'register' && (
               <>

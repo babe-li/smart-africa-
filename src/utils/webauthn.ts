@@ -130,7 +130,7 @@ export async function enrollRealFingerprint(
       success: true,
       credentialId: credential.id,
       rawIdBase64: rawIdHex,
-      attestationType: credential.response ? credential.response.type : 'webauthn.create',
+      attestationType: (credential.response as any)?.type || credential.type || 'webauthn.create',
       hardwarePlatformAvailable: isPlatformAvailable,
       telemetryLogs: telemetry
     };

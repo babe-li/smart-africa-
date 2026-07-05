@@ -6,8 +6,6 @@ import { Product, Category } from './types';
 import { Header } from './components/Header';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { StorefrontView } from './components/StorefrontView';
-import { TcpSecurityHub } from './components/TcpSecurityHub';
-import { TamUtautDashboard } from './components/TamUtautDashboard';
 import { OrdersView } from './components/OrdersView';
 import { AdminPortalView } from './components/AdminPortalView';
 import { ProductModal } from './components/ProductModal';
@@ -18,7 +16,7 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { Smartphone, Monitor } from 'lucide-react';
 
 const MainApplication: React.FC = () => {
-  const { deviceViewMode, setDeviceViewMode, swahiliMode, logUserMovement } = useAuth();
+  const { user, deviceViewMode, setDeviceViewMode, swahiliMode, logUserMovement } = useAuth();
   const { addToCart } = useCart();
 
   const [products, setProducts] = useState<Product[]>(() => {
@@ -49,7 +47,16 @@ const MainApplication: React.FC = () => {
     logUserMovement('ADD_PRODUCT', `Listed new product: ${newProduct.name} (TSh ${newProduct.priceTzs.toLocaleString()})`);
   };
 
+  React.useEffect(() => {
+    if (activeTab === 'admin_portal' && user?.role !== 'admin') {
+      setActiveTab('store');
+    }
+  }, [activeTab, user]);
+
   const handleTabChange = (newTab: string) => {
+    if (newTab === 'admin_portal' && user?.role !== 'admin') {
+      return;
+    }
     setActiveTab(newTab);
     logUserMovement('PAGE_VIEW', `Navigated to section tab: ${newTab.toUpperCase()}`);
   };
@@ -125,8 +132,6 @@ const MainApplication: React.FC = () => {
                   }}
                 />
               )}
-              {activeTab === 'tcp_security' && <TcpSecurityHub />}
-              {activeTab === 'tam_analyzer' && <TamUtautDashboard />}
               {activeTab === 'orders' && <OrdersView />}
               {activeTab === 'admin_portal' && (
                 <AdminPortalView
@@ -156,8 +161,6 @@ const MainApplication: React.FC = () => {
                 }}
               />
             )}
-            {activeTab === 'tcp_security' && <TcpSecurityHub />}
-            {activeTab === 'tam_analyzer' && <TamUtautDashboard />}
             {activeTab === 'orders' && <OrdersView />}
             {activeTab === 'admin_portal' && (
               <AdminPortalView

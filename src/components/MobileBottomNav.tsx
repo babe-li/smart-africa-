@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Shield, BarChart2, ShoppingCart, Fingerprint } from 'lucide-react';
+import { Home, Package, ShoppingCart, Fingerprint } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,7 +17,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenBiometric
 }) => {
   const { totalItems } = useCart();
-  const { swahiliMode } = useAuth();
+  const { user, swahiliMode } = useAuth();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 text-slate-300 py-2 px-3 z-50 shadow-2xl">
@@ -33,13 +33,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         </button>
 
         <button
-          onClick={() => setActiveTab('tcp_security')}
+          onClick={() => setActiveTab('orders')}
           className={`flex flex-col items-center text-[11px] transition-colors ${
-            activeTab === 'tcp_security' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
+            activeTab === 'orders' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
           }`}
         >
-          <Shield className="w-5 h-5 mb-0.5 text-blue-400" />
-          <span>Security</span>
+          <Package className="w-5 h-5 mb-0.5 text-blue-400" />
+          <span>{swahiliMode ? 'Oda' : 'Orders'}</span>
         </button>
 
         {/* Center Biometric Touch Trigger */}
@@ -51,25 +51,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <Fingerprint className="w-6 h-6 stroke-[2.5]" />
         </button>
 
-        <button
-          onClick={() => setActiveTab('tam_analyzer')}
-          className={`flex flex-col items-center text-[11px] transition-colors ${
-            activeTab === 'tam_analyzer' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <BarChart2 className="w-5 h-5 mb-0.5" />
-          <span>TAM/UTAUT</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('admin_portal')}
-          className={`flex flex-col items-center text-[11px] transition-colors ${
-            activeTab === 'admin_portal' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <span className="text-base leading-none mb-0.5">👑</span>
-          <span>Admin</span>
-        </button>
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('admin_portal')}
+            className={`flex flex-col items-center text-[11px] transition-colors ${
+              activeTab === 'admin_portal' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span className="text-base leading-none mb-0.5">👑</span>
+            <span>Admin</span>
+          </button>
+        )}
 
         <button
           onClick={onOpenCart}

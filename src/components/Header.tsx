@@ -253,39 +253,25 @@ export const Header: React.FC<HeaderProps> = ({
           🏷️ {swahiliMode ? 'Duka Kuu (Featured Deals)' : 'Featured Deals'}
         </button>
         <button
-          onClick={() => setActiveTab('tcp_security')}
-          className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
-            activeTab === 'tcp_security' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
-          }`}
-        >
-          🛡️ TCP Security Enclave and Telemetry
-        </button>
-        <button
-          onClick={() => setActiveTab('tam_analyzer')}
-          className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
-            activeTab === 'tam_analyzer' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
-          }`}
-        >
-          📊 TAM and UTAUT Trust Analyzer
-        </button>
-        <button
           onClick={() => setActiveTab('orders')}
           className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
             activeTab === 'orders' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
           }`}
         >
-          📦 {swahiliMode ? 'Oda and Risiti zangu' : 'Escrow Orders and Receipts'}
+          📦 {swahiliMode ? 'Oda na Risiti zangu' : 'Escrow Orders and Receipts'}
         </button>
-        <button
-          onClick={() => setActiveTab('admin_portal')}
-          className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
-            activeTab === 'admin_portal' 
-              ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold bg-blue-500/10 px-3 py-1 rounded-t-lg' 
-              : 'text-slate-300 hover:text-white bg-slate-800/60 px-3 py-1 rounded-lg border border-slate-700/60'
-          }`}
-        >
-          👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave and Telemetry'}
-        </button>
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('admin_portal')}
+            className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
+              activeTab === 'admin_portal' 
+                ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold bg-blue-500/10 px-3 py-1 rounded-t-lg' 
+                : 'text-slate-300 hover:text-white bg-slate-800/60 px-3 py-1 rounded-lg border border-slate-700/60'
+            }`}
+          >
+            👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave & Telemetry'}
+          </button>
+        )}
         <span className="text-slate-800">|</span>
         <span className="text-xs text-slate-500 font-mono hidden xl:inline">
           🔒 SSL/TLS 1.3 End-to-End Encrypted Gateway
