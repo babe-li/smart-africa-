@@ -4,13 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import { formatTzs } from '../utils/format';
 import { 
   Package, ShieldCheck, CheckCircle2, Clock, Truck, FileText, ArrowUpRight,
-  Award, Sparkles, Activity, TrendingUp, UserCheck, ShieldAlert, Gift
+  Award, Sparkles, Activity, TrendingUp, UserCheck, ShieldAlert, Gift, MessageSquare, Phone, Send, Smartphone
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { PaymentSmsModal } from './PaymentSmsModal';
 
 export const OrdersView: React.FC = () => {
   const { orders } = useCart();
   const { user, biometricStatus, swahiliMode, addSecurityLog } = useAuth();
+  const [smsPhones, setSmsPhones] = React.useState<Record<string, string>>({});
+  const [smsSentStatus, setSmsSentStatus] = React.useState<Record<string, string>>({});
+  const [activeSmsOrder, setActiveSmsOrder] = React.useState<any | null>(null);
 
   const handleReleaseEscrow = (orderId: string) => {
     confetti({ particleCount: 80, spread: 60 });
@@ -20,6 +24,21 @@ export const OrdersView: React.FC = () => {
       detail: `Buyer confirmed physical receipt of order ${orderId}. Escrow lock released to seller bank account in TZS.`,
       payloadSnippet: `ESCROW_RELEASE_AUTH: SIG_OK`
     });
+  };
+
+  const handleSendOrderSms = (order: any) => {
+    const targetPhone = smsPhones[order.id] || order.buyerPhone || '0754 882 190';
+    addSecurityLog({
+      type: 'SMS_DISPATCH',
+      status: 'PASSED',
+      detail: `SMS product buying confirmation dispatched to mobile number ${targetPhone} for Order #${order.id}.`,
+      payloadSnippet: `SMS_GATEWAY: DELIVERED TO ${targetPhone}`
+    });
+    setSmsSentStatus(prev => ({ 
+      ...prev, 
+      [order.id]: swahiliMode ? `Ujumbe wa uthibitisho umetumwa kwenda ${targetPhone}` : `Confirmation SMS dispatched to ${targetPhone}` 
+    }));
+    setActiveSmsOrder(order);
   };
 
   // Calculate Loyalty Points based on total purchase spend
@@ -209,6 +228,56 @@ export const OrdersView: React.FC = () => {
                 ))}
               </div>
 
+              {/* Send Product Buying Confirmation SMS Box */}
+              <div className="bg-slate-900/90 px-6 py-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-sans text-xs">
+                <div className="flex items-center space-x-2 text-slate-300">
+                  <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <div>
+                    <p className="font-bold text-white">
+                      {swahiliMode ? 'Tuma Ujumbe wa SMS Thabitishi' : 'Send Product Buying Confirmation SMS'}
+                    </p>
+                    <p className="text-[10px] text-slate-400 leading-tight">
+                      {swahiliMode ? 'Tuma risiti au thibitisho la ununuzi kwenda kwenye simu ya mkononi.' : 'Dispatch instant SMS/WhatsApp delivery & escrow receipt to mobile number.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="text"
+                    value={smsPhones[order.id] !== undefined ? smsPhones[order.id] : (order.buyerPhone || '0754 882 190')}
+                    onChange={(e) => setSmsPhones(prev => ({ ...prev, [order.id]: e.target.value }))}
+                    placeholder="07xx xxx xxx"
+                    className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 font-mono text-xs text-white outline-none focus:border-emerald-500 transition-colors w-36 sm:w-40"
+                  />
+                  <button
+                    onClick={() => handleSendOrderSms(order)}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition-colors shadow shrink-0 cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{swahiliMode ? 'Tuma SMS' : 'Send SMS'}</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveSmsOrder(order)}
+                    className="bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold px-2.5 py-1.5 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1 transition-colors shrink-0 cursor-pointer"
+                    title="View Simulated Mobile Inbox"
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>{swahiliMode ? 'Angalia SMS' : 'View SMS Inbox'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {smsSentStatus[order.id] && (
+                <div className="bg-emerald-950/60 border-t border-emerald-500/30 px-6 py-2 text-[11px] text-emerald-300 font-mono flex items-center justify-between animate-in fade-in">
+                  <span className="flex items-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-emerald-400 shrink-0" />
+                    {smsSentStatus[order.id]}
+                  </span>
+                  <span className="text-[10px] text-emerald-400/80">TCRA Gateway • Verified</span>
+                </div>
+              )}
+
               {/* Security Receipt & Escrow Footer */}
               <div className="bg-slate-950 text-white px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs font-mono border-t border-slate-800">
                 <div>
@@ -232,6 +301,17 @@ export const OrdersView: React.FC = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {activeSmsOrder && (
+        <PaymentSmsModal
+          isOpen={!!activeSmsOrder}
+          onClose={() => setActiveSmsOrder(null)}
+          phone={smsPhones[activeSmsOrder.id] || activeSmsOrder.buyerPhone || '0754 882 190'}
+          orderId={activeSmsOrder.id}
+          amountTzs={activeSmsOrder.totalTzs}
+          paymentMethod={activeSmsOrder.paymentTransaction?.method || 'mpesa'}
+        />
       )}
     </div>
   );

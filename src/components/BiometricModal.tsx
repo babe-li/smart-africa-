@@ -157,8 +157,8 @@ export const BiometricModal: React.FC<BiometricModalProps> = ({ isOpen, onClose 
               </h4>
               <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 {!user?.fingerprintRegistered
-                  ? 'Works on both Phones (Android Biometrics/TouchID) and Laptops (TouchID/Windows Hello or Phone QR sync).'
-                  : 'Calls real navigator.credentials.get() requesting OS biometric signature.'}
+                  ? (swahiliMode ? 'Usajili wa alama za vidole au uso kwa usalama wa Escrow.' : 'Hardware biometric enrollment for secure escrow transactions.')
+                  : (swahiliMode ? 'Inatumia uhakiki halisi wa kifaa chako.' : 'Calls real navigator.credentials.get() requesting OS biometric signature.')}
               </p>
             </div>
 

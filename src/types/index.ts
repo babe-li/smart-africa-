@@ -99,12 +99,18 @@ export interface Order {
   shippingAddress: string;
   orderDate: string;
   escrowProtectionCode: string;
+  buyerPhone?: string;
+  smsHistory?: Array<{
+    timestamp: string;
+    phone: string;
+    message: string;
+  }>;
 }
 
 export interface SecurityEventLog {
   id: string;
   timestamp: string;
-  type: 'SQLI_CHECK' | 'XSS_FILTER' | 'CSRF_VALIDATION' | 'BIOMETRIC_AUTH' | 'TCP_ATTESTATION' | 'TOKEN_REFRESH';
+  type: 'SQLI_CHECK' | 'XSS_FILTER' | 'CSRF_VALIDATION' | 'BIOMETRIC_AUTH' | 'TCP_ATTESTATION' | 'TOKEN_REFRESH' | 'SMS_DISPATCH';
   status: 'PASSED' | 'BLOCKED' | 'WARNED';
   detail: string;
   payloadSnippet?: string;
