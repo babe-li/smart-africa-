@@ -276,6 +276,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           📦 {swahiliMode ? 'Oda & Risiti zangu' : 'Escrow Orders & Receipts'}
         </button>
+        <button
+          onClick={() => setActiveTab('admin_portal')}
+          className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
+            activeTab === 'admin_portal' 
+              ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold bg-blue-500/10 px-3 py-1 rounded-t-lg' 
+              : 'text-slate-300 hover:text-white bg-slate-800/60 px-3 py-1 rounded-lg border border-slate-700/60'
+          }`}
+        >
+          👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave & Telemetry'}
+        </button>
         <span className="text-slate-800">|</span>
         <span className="text-xs text-slate-500 font-mono hidden xl:inline">
           🔒 SSL/TLS 1.3 End-to-End Encrypted Gateway

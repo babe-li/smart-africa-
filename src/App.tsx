@@ -9,6 +9,7 @@ import { StorefrontView } from './components/StorefrontView';
 import { TcpSecurityHub } from './components/TcpSecurityHub';
 import { TamUtautDashboard } from './components/TamUtautDashboard';
 import { OrdersView } from './components/OrdersView';
+import { AdminPortalView } from './components/AdminPortalView';
 import { ProductModal } from './components/ProductModal';
 import { BiometricModal } from './components/BiometricModal';
 import { AuthModal } from './components/AuthModal';
@@ -17,8 +18,16 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { Smartphone, Monitor } from 'lucide-react';
 
 const MainApplication: React.FC = () => {
-  const { deviceViewMode, setDeviceViewMode, swahiliMode } = useAuth();
+  const { deviceViewMode, setDeviceViewMode, swahiliMode, logUserMovement } = useAuth();
   const { addToCart } = useCart();
+
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saved = localStorage.getItem('smarttrade_products');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return PRODUCTS; }
+    }
+    return PRODUCTS;
+  });
 
   const [activeTab, setActiveTab] = useState<string>('store');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -31,8 +40,22 @@ const MainApplication: React.FC = () => {
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState<boolean>(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
 
+  const handleAddProduct = (newProduct: Product) => {
+    setProducts(prev => {
+      const updated = [newProduct, ...prev];
+      localStorage.setItem('smarttrade_products', JSON.stringify(updated));
+      return updated;
+    });
+    logUserMovement('ADD_PRODUCT', `Listed new product: ${newProduct.name} (TSh ${newProduct.priceTzs.toLocaleString()})`);
+  };
+
+  const handleTabChange = (newTab: string) => {
+    setActiveTab(newTab);
+    logUserMovement('PAGE_VIEW', `Navigated to section tab: ${newTab.toUpperCase()}`);
+  };
+
   // Filter search queries
-  const searchedProducts = PRODUCTS.filter(p => {
+  const searchedProducts = products.filter(p => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return p.name.toLowerCase().includes(q) ||
@@ -59,7 +82,7 @@ const MainApplication: React.FC = () => {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenBiometricModal={() => setIsBiometricModalOpen(true)}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
       />
 
       {/* Main Container wrapper supporting Phone Frame View mode */}
@@ -88,14 +111,29 @@ const MainApplication: React.FC = () => {
                 <StorefrontView
                   products={searchedProducts}
                   selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  onSelectProduct={(p) => setSelectedProduct(p)}
-                  onAddToCart={(p) => addToCart(p, 1)}
+                  setSelectedCategory={(cat) => {
+                    setSelectedCategory(cat);
+                    logUserMovement('SEARCH', `Filtered store category: ${cat}`);
+                  }}
+                  onSelectProduct={(p) => {
+                    setSelectedProduct(p);
+                    logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
+                  }}
+                  onAddToCart={(p) => {
+                    addToCart(p, 1);
+                    logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
+                  }}
                 />
               )}
               {activeTab === 'tcp_security' && <TcpSecurityHub />}
               {activeTab === 'tam_analyzer' && <TamUtautDashboard />}
               {activeTab === 'orders' && <OrdersView />}
+              {activeTab === 'admin_portal' && (
+                <AdminPortalView
+                  products={products}
+                  onAddProduct={handleAddProduct}
+                />
+              )}
             </div>
           </div>
         ) : (
@@ -104,14 +142,29 @@ const MainApplication: React.FC = () => {
               <StorefrontView
                 products={searchedProducts}
                 selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                onSelectProduct={(p) => setSelectedProduct(p)}
-                onAddToCart={(p) => addToCart(p, 1)}
+                setSelectedCategory={(cat) => {
+                  setSelectedCategory(cat);
+                  logUserMovement('SEARCH', `Filtered store category: ${cat}`);
+                }}
+                onSelectProduct={(p) => {
+                  setSelectedProduct(p);
+                  logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
+                }}
+                onAddToCart={(p) => {
+                  addToCart(p, 1);
+                  logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
+                }}
               />
             )}
             {activeTab === 'tcp_security' && <TcpSecurityHub />}
             {activeTab === 'tam_analyzer' && <TamUtautDashboard />}
             {activeTab === 'orders' && <OrdersView />}
+            {activeTab === 'admin_portal' && (
+              <AdminPortalView
+                products={products}
+                onAddProduct={handleAddProduct}
+              />
+            )}
           </div>
         )}
       </main>
@@ -119,7 +172,7 @@ const MainApplication: React.FC = () => {
       {/* Mobile Bottom Navigation App Bar */}
       <MobileBottomNav
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         onOpenCart={() => setIsCartDrawerOpen(true)}
         onOpenBiometric={() => setIsBiometricModalOpen(true)}
       />

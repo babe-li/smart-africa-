@@ -62,6 +62,16 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         </button>
 
         <button
+          onClick={() => setActiveTab('admin_portal')}
+          className={`flex flex-col items-center text-[11px] transition-colors ${
+            activeTab === 'admin_portal' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <span className="text-base leading-none mb-0.5">👑</span>
+          <span>Admin</span>
+        </button>
+
+        <button
           onClick={onOpenCart}
           className="flex flex-col items-center text-[11px] text-slate-400 hover:text-white relative transition-colors"
         >

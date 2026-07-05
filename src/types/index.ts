@@ -53,6 +53,27 @@ export interface User {
     secureEnclave: boolean;
   };
   lastLoginTimestamp: string;
+  role?: 'admin' | 'user';
+}
+
+export interface AdminAccount {
+  id: string;
+  email: string;
+  name: string;
+  passwordPlain: string;
+  role: 'admin';
+  addedBy: string;
+  addedAt: string;
+}
+
+export interface UserMovementLog {
+  id: string;
+  timestamp: string;
+  userEmail: string;
+  userName: string;
+  actionType: 'LOGIN' | 'PAGE_VIEW' | 'SEARCH' | 'ADD_TO_CART' | 'CHECKOUT' | 'BIOMETRIC' | 'ADD_PRODUCT' | 'ADD_ADMIN' | 'LOGOUT';
+  description: string;
+  ipOrDevice?: string;
 }
 
 export type PaymentMethodType = 'mpesa' | 'tigopesa' | 'airtel' | 'card' | 'flutterwave';
@@ -97,3 +118,4 @@ export interface TamMetric {
   description: string;
   implementedFeatures: string[];
 }
+
