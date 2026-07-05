@@ -231,7 +231,15 @@ export const Header: React.FC<HeaderProps> = ({
             👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave & Telemetry'}
           </button>
         )}
-        <span className="text-slate-800">|</span>
+        <a
+          href="/SmartTrade_IA428_Trust_Management_Report.docx"
+          download="SmartTrade_IA428_Trust_Management_Report.docx"
+          className="font-bold flex items-center whitespace-nowrap px-3 py-1 rounded-lg text-amber-400 hover:text-white bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all shadow-sm shrink-0"
+          title="Download Formal Course 428 Technical Report with Screenshots"
+        >
+          📄 {swahiliMode ? 'Pakua Ripoti IA 428 (.DOCX)' : 'Download IA 428 Report (.DOCX)'}
+        </a>
+        <span className="text-slate-800 hidden md:inline">|</span>
         <span className="text-xs text-slate-500 font-mono hidden xl:inline">
           🔒 SSL/TLS 1.3 End-to-End Encrypted Gateway
         </span>
