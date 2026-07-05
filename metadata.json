@@ -1,0 +1,6 @@
+{
+  "name": "SmartTrade Africa - Secure E-Commerce Platform",
+  "description": "Amazon-grade e-commerce platform with Tanzanian Shilling pricing, WebAuthn Fingerprint Biometrics, Trusted Computing Platform (TCP) security telemetry, and TAM/UTAUT trust management integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
