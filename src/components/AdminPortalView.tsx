@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { TcpSecurityHub } from './TcpSecurityHub';
 import { TamUtautDashboard } from './TamUtautDashboard';
+import { SecurityHealthIndicators } from './SecurityHealthIndicators';
 import { Product, Category, UserMovementLog } from '../types';
 import { 
   ShieldCheck, 
@@ -42,7 +43,7 @@ interface AdminPortalViewProps {
 export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAddProduct }) => {
   const { user, adminList, addAdminAccount, userMovements, swahiliMode, biometricAttemptLogs } = useAuth();
   const { cart, totalItems, subtotalTzs, orders } = useCart();
-  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'add_product' | 'add_admin'>('movements');
+  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'add_product' | 'add_admin' | 'security_health'>('movements');
 
   // Biometric log filter
   const [biometricFilter, setBiometricFilter] = useState<string>('ALL');
@@ -220,6 +221,17 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
           >
             <ShieldCheck className="w-4 h-4" />
             <span>TCP Security Enclave</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('security_health')}
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+              activeTab === 'security_health' 
+                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/20' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
+            }`}
+          >
+            <Activity className="w-4 h-4 text-cyan-400" />
+            <span>Security Health Indicators</span>
           </button>
           <button
             onClick={() => setActiveTab('biometric_logs')}
@@ -549,6 +561,13 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* SUB-TAB: SECURITY HEALTH INDICATORS */}
+      {(activeTab === 'security_health' || activeTab === 'tcp_security') && (
+        <div className="space-y-6">
+          <SecurityHealthIndicators />
         </div>
       )}
 
