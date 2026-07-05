@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { TcpSecurityHub } from './TcpSecurityHub';
 import { TamUtautDashboard } from './TamUtautDashboard';
 import { SecurityHealthIndicators } from './SecurityHealthIndicators';
+import { BiometricThresholdAlert } from './BiometricThresholdAlert';
 import { Product, Category, UserMovementLog } from '../types';
 import { 
   ShieldCheck, 
@@ -47,6 +48,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
 
   // Biometric log filter
   const [biometricFilter, setBiometricFilter] = useState<string>('ALL');
+  const [isThresholdAlertActive, setIsThresholdAlertActive] = useState<boolean>(false);
 
   // Movement tracker filters
   const [movementSearch, setMovementSearch] = useState('');
@@ -580,7 +582,12 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
 
       {/* SUB-TAB: BIOMETRIC AUTHENTICATION ATTEMPT LOGS */}
       {(activeTab === 'biometric_logs' || activeTab === 'tcp_security') && (
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+        <div className="space-y-6">
+          <BiometricThresholdAlert 
+            logs={biometricAttemptLogs || []} 
+            onThresholdExceededChange={setIsThresholdAlertActive} 
+          />
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
             <div>
               <div className="flex items-center space-x-2">
@@ -633,7 +640,14 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                 {biometricAttemptLogs
                   ?.filter(l => biometricFilter === 'ALL' || l.result === biometricFilter)
                   .map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr 
+                      key={log.id} 
+                      className={`transition-colors ${
+                        isThresholdAlertActive && (log.result === 'FAILED' || log.result === 'REJECTED')
+                          ? 'bg-rose-950/70 text-rose-100 font-bold border-l-4 border-rose-500 hover:bg-rose-900/80'
+                          : 'hover:bg-slate-800/40'
+                      }`}
+                    >
                       <td className="py-3.5 px-4 font-mono text-slate-400 text-[11px]">{log.id}</td>
                       <td className="py-3.5 px-4 font-mono text-slate-300 text-[11px] whitespace-nowrap">
                         <div className="flex items-center space-x-1.5">
@@ -694,6 +708,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       )}
 
