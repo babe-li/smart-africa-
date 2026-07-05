@@ -21,7 +21,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // Live hash calculation preview for Course 428 assignment demonstration
+  // Live cryptographic hash verification preview
   const handlePasswordChange = async (val: string) => {
     setPassword(val);
     if (val.length > 0) {
@@ -200,7 +200,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Live SHA-256 Hashing Simulator (Course 428 assignment feature) */}
+            {/* Live SHA-256 Hashing Telemetry */}
             {hashPreview && (
               <div className="bg-slate-950 p-3 rounded-xl border border-green-500/30 text-[10px] font-mono space-y-1">
                 <p className="text-green-400 font-bold flex items-center">

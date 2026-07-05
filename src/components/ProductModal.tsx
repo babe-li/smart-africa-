@@ -51,7 +51,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               />
             </div>
 
-            {/* Regulatory & Course 428 Trust Box */}
+            {/* Regulatory and Enterprise Trust Box */}
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 space-y-2">
               <div className="flex items-center space-x-2 text-blue-300 font-bold text-xs">
                 <Award className="w-4 h-4 text-blue-400" />

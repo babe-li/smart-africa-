@@ -54,12 +54,6 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
               : 'Secure Commerce Backed by TCP Enclave and Hardware Biometrics'}
           </h1>
 
-          <p className="text-sm text-slate-400 leading-relaxed font-medium">
-            {swahiliMode
-              ? 'Malipo yote yanalindwa 100% kupitia mfumo wa Escrow (Vodacom M-Pesa, Tigo Pesa, na Airtel Money). Uhakika wa kidijitali 100%!'
-              : 'Fingerprint authenticated payments and secure delivery. Verified trusted accounts only with transparent Tanzanian Shilling (TSh) escrow protection.'}
-          </p>
-
           {/* Quick Trust Highlights */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
             <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex items-center space-x-2">

@@ -69,7 +69,7 @@ export const BiometricModal: React.FC<BiometricModalProps> = ({ isOpen, onClose 
                 {swahiliMode ? 'Uthibitisho wa Kihisi Dole (WebAuthn)' : 'Hardware Biometric Authentication'}
               </h3>
               <p className="text-[10px] text-slate-400">
-                TCP FIDO2 Platform Security Enclave • Course 428
+                TCP FIDO2 Platform Security Enclave • Hardware Biometrics
               </p>
             </div>
           </div>
@@ -247,7 +247,7 @@ export const BiometricModal: React.FC<BiometricModalProps> = ({ isOpen, onClose 
             </div>
 
             <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 text-slate-300 text-[11px] leading-relaxed font-sans">
-              <strong>Course 428 Application:</strong> By integrating real WebAuthn hardware capabilities, SmartTrade Africa eliminates credentials stolen via phishing or database leaks. Even if server databases are compromised, attackers obtain only public keys.
+              <strong>Enterprise Architecture:</strong> By integrating real WebAuthn hardware capabilities, SmartTrade Africa eliminates credentials stolen via phishing or database leaks. Even if server databases are compromised, attackers obtain only public keys.
             </div>
           </div>
         )}

@@ -45,18 +45,18 @@ export const TcpSecurityHub: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 text-slate-200">
-      {/* Course Header Banner */}
+      {/* Header Banner */}
       <div className="bg-gradient-to-br from-blue-900/50 via-slate-900 to-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-xl">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <span className="bg-blue-500/20 text-blue-400 font-mono text-xs px-2.5 py-1 rounded-full border border-blue-500/30 font-bold uppercase tracking-wider">
-              Course 428 Trust and Security Architecture
+              Hardware Security Enclave
             </span>
             <h1 className="text-2xl font-bold mt-2.5 text-white">
               {swahiliMode ? 'Kituo cha Usalama cha TCP (Trusted Computing Platform)' : 'Trusted Computing Platform (TCP) Security Enclave'}
             </h1>
             <p className="text-sm text-slate-400 max-w-2xl mt-1 leading-relaxed">
-              Demonstrating hardware-level device attestation, FIDO2 biometric cryptographic tokens, and live threat mitigation (Anti-SQLi, XSS, CSRF) for SmartTrade Africa Ltd.
+              Hardware-level device attestation, FIDO2 biometric cryptographic tokens, and live threat mitigation (Anti-SQLi, XSS, CSRF) for SmartTrade Africa Ltd.
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export const TcpSecurityHub: React.FC = () => {
               <Cpu className="w-6 h-6" />
             </div>
             <span className="bg-blue-500/20 text-blue-400 font-bold text-[10px] px-2 py-0.5 rounded-full border border-blue-500/30">
-              OBJECTIVE #12
+              ATTESTATION
             </span>
           </div>
           <h3 className="font-bold text-white text-base">Device Trust Verification</h3>
@@ -103,7 +103,7 @@ export const TcpSecurityHub: React.FC = () => {
               <Lock className="w-6 h-6" />
             </div>
             <span className="bg-blue-500/20 text-blue-400 font-bold text-[10px] px-2 py-0.5 rounded-full border border-blue-500/30">
-              OBJECTIVE #13
+              FIDO2 KEY
             </span>
           </div>
           <h3 className="font-bold text-white text-base">Zero-Knowledge Biometrics</h3>
@@ -111,7 +111,7 @@ export const TcpSecurityHub: React.FC = () => {
             Fingerprint and Face ID authentication generate an asymmetric ECDSA P-256 digital signature. The private key never leaves the smartphone enclave.
           </p>
           <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-300">
-            CredID: {user?.fingerprintCredentialId || 'fido2-cred-tz-demo'}
+            CredID: {user?.fingerprintCredentialId || 'fido2-cred-tz-node'}
           </div>
         </div>
 
@@ -121,7 +121,7 @@ export const TcpSecurityHub: React.FC = () => {
               <Key className="w-6 h-6" />
             </div>
             <span className="bg-blue-500/20 text-blue-400 font-bold text-[10px] px-2 py-0.5 rounded-full border border-blue-500/30">
-              OBJECTIVE #15
+              TOKEN AUTH
             </span>
           </div>
           <h3 className="font-bold text-white text-base">Secure Token Handling</h3>
@@ -134,7 +134,7 @@ export const TcpSecurityHub: React.FC = () => {
         </div>
       </div>
 
-      {/* Interactive Threat Sanitization Simulator */}
+      {/* Interactive Threat Sanitization Enclave */}
       <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl">
         <h3 className="font-bold text-white text-base mb-1 flex items-center">
           <Terminal className="w-5 h-5 mr-2 text-blue-500" />

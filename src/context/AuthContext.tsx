@@ -178,10 +178,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginAsAdminDirectly = () => {
     const adminUser: User = {
-      id: 'adm-root-tz-428',
+      id: 'adm-root-tz-01',
       name: 'Myovela Babeli',
       email: 'myovelababeli@gmail.com',
-      phone: '0754 000 428',
+      phone: '0754 000 100',
       hashedPasswordPreview: 'e6c2... (PBKDF2 Enclave Admin)',
       fingerprintRegistered: true,
       fingerprintCredentialId: 'fido2-admin-tpm-root',
@@ -261,7 +261,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: isAdminLogin ? 'adm-root-' + Math.random().toString(36).substring(2, 6) : 'usr-' + Math.random().toString(36).substring(2, 7),
       name: isAdminLogin ? (matchedAdmin?.name || 'Myovela Babeli') : (phoneOrEmail.includes('@') ? phoneOrEmail.split('@')[0].replace('.', ' ') : 'Customer TZ'),
       email: isAdminLogin ? (matchedAdmin?.email || 'myovelababeli@gmail.com') : (phoneOrEmail.includes('@') ? phoneOrEmail : `${phoneOrEmail}@smarttrade.co.tz`),
-      phone: isAdminLogin ? '0754 000 428' : (phoneOrEmail.includes('@') ? '0754 123 456' : phoneOrEmail),
+      phone: isAdminLogin ? '0754 000 100' : (phoneOrEmail.includes('@') ? '0754 123 456' : phoneOrEmail),
       hashedPasswordPreview: hashed,
       fingerprintRegistered: isAdminLogin ? true : false,
       location: isAdminLogin ? 'Dar es Salaam (Root Enclave HQ)' : 'Dar es Salaam, Tanzania',
@@ -334,7 +334,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setBiometricStatus('scanning');
     
     // Invoke REAL WebAuthn hardware biometric API
-    const res = await enrollRealFingerprint(user?.name || 'Customer Enclave', user?.id || 'usr-tz-428', mode);
+    const res = await enrollRealFingerprint(user?.name || 'Customer Enclave', user?.id || 'usr-tz-01', mode);
     setWebAuthnLogs(res.telemetryLogs);
 
     if (res.success && res.credentialId) {

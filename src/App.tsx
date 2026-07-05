@@ -185,7 +185,7 @@ const MainApplication: React.FC = () => {
             <p className="text-slate-400 leading-relaxed">Tanzania's trusted digital commerce platform. Designed to eliminate online payment fraud and build customer trust.</p>
           </div>
           <div>
-            <h4 className="font-bold text-white text-sm mb-2">Course 428 Objectives</h4>
+            <h4 className="font-bold text-white text-sm mb-2">Core Platform Pillars</h4>
             <ul className="space-y-1.5 text-slate-400">
               <li>• Trusted Computing Platform (TCP)</li>
               <li>• Fingerprint Biometric Auth (WebAuthn)</li>
