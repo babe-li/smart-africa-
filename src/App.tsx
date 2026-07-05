@@ -13,10 +13,10 @@ import { BiometricModal } from './components/BiometricModal';
 import { AuthModal } from './components/AuthModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
-import { Smartphone, Monitor } from 'lucide-react';
+import { AcademicReportView } from './components/AcademicReportView';
 
 const MainApplication: React.FC = () => {
-  const { user, deviceViewMode, setDeviceViewMode, swahiliMode, logUserMovement } = useAuth();
+  const { user, swahiliMode, logUserMovement } = useAuth();
   const { addToCart } = useCart();
 
   const [products, setProducts] = useState<Product[]>(() => {
@@ -92,83 +92,33 @@ const MainApplication: React.FC = () => {
         setActiveTab={handleTabChange}
       />
 
-      {/* Main Container wrapper supporting Phone Frame View mode */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 pb-24">
-        {deviceViewMode === 'mobile' ? (
-          <div className="max-w-sm mx-auto my-2 bg-slate-900 p-3 rounded-[3rem] shadow-[0_0_50px_rgba(30,58,138,0.25)] border-[8px] border-slate-800 relative min-h-[750px] flex flex-col">
-            {/* Phone Notch */}
-            <div className="w-32 h-5 bg-slate-950 mx-auto rounded-b-xl flex items-center justify-center space-x-1.5 mb-3">
-              <div className="w-2 h-2 rounded-full bg-slate-700" />
-              <div className="w-8 h-1 rounded-full bg-slate-700" />
-            </div>
-
-            {/* Phone screen internal content */}
-            <div className="flex-1 bg-slate-950 text-slate-200 rounded-[2rem] overflow-y-auto p-3 space-y-4 max-h-[680px] border border-slate-800/80">
-              <div className="bg-blue-600/20 border border-blue-500/40 text-blue-300 px-3 py-1.5 rounded-xl text-center text-xs font-black shadow-sm flex items-center justify-between">
-                <span>🇹🇿 SMARTTRADE MOBILE APP</span>
-                <button 
-                  onClick={() => setDeviceViewMode('desktop')} 
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded text-[9px] transition-colors"
-                >
-                  Exit Phone View
-                </button>
-              </div>
-
-              {activeTab === 'store' && (
-                <StorefrontView
-                  products={searchedProducts}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={(cat) => {
-                    setSelectedCategory(cat);
-                    logUserMovement('SEARCH', `Filtered store category: ${cat}`);
-                  }}
-                  onSelectProduct={(p) => {
-                    setSelectedProduct(p);
-                    logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
-                  }}
-                  onAddToCart={(p) => {
-                    addToCart(p, 1);
-                    logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
-                  }}
-                />
-              )}
-              {activeTab === 'orders' && <OrdersView />}
-              {activeTab === 'admin_portal' && (
-                <AdminPortalView
-                  products={products}
-                  onAddProduct={handleAddProduct}
-                />
-              )}
-            </div>
-          </div>
-        ) : (
-          <div>
-            {activeTab === 'store' && (
-              <StorefrontView
-                products={searchedProducts}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={(cat) => {
-                  setSelectedCategory(cat);
-                  logUserMovement('SEARCH', `Filtered store category: ${cat}`);
-                }}
-                onSelectProduct={(p) => {
-                  setSelectedProduct(p);
-                  logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
-                }}
-                onAddToCart={(p) => {
-                  addToCart(p, 1);
-                  logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
-                }}
-              />
-            )}
-            {activeTab === 'orders' && <OrdersView />}
-            {activeTab === 'admin_portal' && (
-              <AdminPortalView
-                products={products}
-                onAddProduct={handleAddProduct}
-              />
-            )}
-          </div>
+      {/* Main Container wrapper supporting responsive layout across all devices */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-6 pb-24">
+        {activeTab === 'store' && (
+          <StorefrontView
+            products={searchedProducts}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={(cat) => {
+              setSelectedCategory(cat);
+              logUserMovement('SEARCH', `Filtered store category: ${cat}`);
+            }}
+            onSelectProduct={(p) => {
+              setSelectedProduct(p);
+              logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
+            }}
+            onAddToCart={(p) => {
+              addToCart(p, 1);
+              logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
+            }}
+          />
+        )}
+        {activeTab === 'orders' && <OrdersView />}
+        {activeTab === 'academic_report' && <AcademicReportView />}
+        {activeTab === 'admin_portal' && (
+          <AdminPortalView
+            products={products}
+            onAddProduct={handleAddProduct}
+          />
         )}
       </main>
 

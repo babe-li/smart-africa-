@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { 
   Search, MapPin, ShoppingCart, ShieldCheck, Fingerprint, 
-  Smartphone, Monitor, Globe, ChevronDown, UserCheck, Lock, LogOut 
+  Globe, ChevronDown, UserCheck, Lock, LogOut 
 } from 'lucide-react';
 import { Category } from '../types';
 
@@ -39,62 +39,22 @@ export const Header: React.FC<HeaderProps> = ({
   activeTab,
   setActiveTab
 }) => {
-  const { user, logout, deviceViewMode, setDeviceViewMode, swahiliMode, setSwahiliMode } = useAuth();
+  const { user, logout, swahiliMode, setSwahiliMode } = useAuth();
   const { totalItems } = useCart();
   const [deliveryCity, setDeliveryCity] = useState('Dar es Salaam (Posta)');
 
   return (
     <header className="bg-slate-900 text-slate-200 sticky top-0 z-40 shadow-2xl border-b border-slate-800">
-      {/* Topmost trust & simulation banner */}
-      <div className="bg-slate-950 text-xs py-1.5 px-6 flex flex-wrap items-center justify-between border-b border-slate-800">
-        <div className="flex items-center space-x-3 font-mono">
-          <span className="flex items-center gap-1.5 text-xs font-semibold bg-blue-500/10 text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-            TCP Hardware Enclave: ACTIVE (256-Bit SSL)
-          </span>
-          <span className="hidden sm:inline text-slate-700">|</span>
-          <span className="hidden md:inline text-slate-400 text-[11px]">
-            🇹🇿 TCRA and TBS E-Commerce Trust Verified
-          </span>
-        </div>
-
-        {/* View Mode & Language Toggles */}
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center bg-slate-800 rounded-full p-0.5 border border-slate-700">
-            <button
-              onClick={() => setDeviceViewMode('desktop')}
-              className={`flex items-center px-2.5 py-0.5 rounded-full text-xs transition-colors ${
-                deviceViewMode === 'desktop'
-                  ? 'bg-blue-600 text-white font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="View full Desktop interface"
-            >
-              <Monitor className="w-3 h-3 mr-1" />
-              Desktop View
-            </button>
-            <button
-              onClick={() => setDeviceViewMode('mobile')}
-              className={`flex items-center px-2.5 py-0.5 rounded-full text-xs transition-colors ${
-                deviceViewMode === 'mobile'
-                  ? 'bg-blue-600 text-white font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="Simulate Mobile App frame"
-            >
-              <Smartphone className="w-3 h-3 mr-1" />
-              Phone View
-            </button>
-          </div>
-
-          <button
-            onClick={() => setSwahiliMode(!swahiliMode)}
-            className="flex items-center text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 text-blue-400 font-medium transition-colors"
-          >
-            <Globe className="w-3 h-3 mr-1.5 text-blue-400" />
-            {swahiliMode ? '🇹🇿 Kiswahili' : '🇬🇧 English / TSh'}
-          </button>
-        </div>
+      {/* Topmost language bar */}
+      <div className="bg-slate-950 text-xs py-1.5 px-3 sm:px-6 flex justify-end items-center border-b border-slate-800">
+        {/* Language Toggle */}
+        <button
+          onClick={() => setSwahiliMode(!swahiliMode)}
+          className="flex items-center text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 text-blue-400 font-medium transition-colors"
+        >
+          <Globe className="w-3 h-3 mr-1.5 text-blue-400" />
+          {swahiliMode ? '🇹🇿 Kiswahili' : '🇬🇧 English / TSh'}
+        </button>
       </div>
 
       {/* Main Header Bar */}
@@ -259,6 +219,16 @@ export const Header: React.FC<HeaderProps> = ({
           }`}
         >
           📦 {swahiliMode ? 'Oda na Risiti zangu' : 'Escrow Orders and Receipts'}
+        </button>
+        <button
+          onClick={() => setActiveTab('academic_report')}
+          className={`font-semibold flex items-center whitespace-nowrap transition-all px-3 py-1 rounded-lg ${
+            activeTab === 'academic_report'
+              ? 'text-white font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md shadow-blue-500/20 scale-105'
+              : 'text-amber-400 hover:text-white bg-amber-500/10 border border-amber-500/30'
+          }`}
+        >
+          📄 {swahiliMode ? 'Ripoti ya Kiakademia (.DOCX)' : 'Course 428 Report (.DOCX)'}
         </button>
         {user?.role === 'admin' && (
           <button

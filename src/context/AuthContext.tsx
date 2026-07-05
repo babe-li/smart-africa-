@@ -13,8 +13,6 @@ interface AuthContextType {
   authenticateWithFingerprint: () => Promise<boolean>;
   securityLogs: SecurityEventLog[];
   addSecurityLog: (log: Omit<SecurityEventLog, 'id' | 'timestamp'>) => void;
-  deviceViewMode: 'desktop' | 'mobile';
-  setDeviceViewMode: (mode: 'desktop' | 'mobile') => void;
   swahiliMode: boolean;
   setSwahiliMode: (val: boolean) => void;
   trustScoreOverall: number;
@@ -152,7 +150,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user?.fingerprintRegistered ? 'ready' : 'unregistered'
   );
   const [securityLogs, setSecurityLogs] = useState<SecurityEventLog[]>(INITIAL_SECURITY_LOGS);
-  const [deviceViewMode, setDeviceViewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [swahiliMode, setSwahiliMode] = useState<boolean>(false);
   const [webAuthnLogs, setWebAuthnLogs] = useState<string[]>(['System initialized. WebAuthn platform ready.']);
   const [isHardwareSupported, setIsHardwareSupported] = useState<boolean | null>(null);
@@ -414,8 +411,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       authenticateWithFingerprint,
       securityLogs,
       addSecurityLog,
-      deviceViewMode,
-      setDeviceViewMode,
       swahiliMode,
       setSwahiliMode,
       trustScoreOverall: 98,
