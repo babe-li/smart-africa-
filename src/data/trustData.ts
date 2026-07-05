@@ -117,5 +117,21 @@ export const INITIAL_SECURITY_LOGS: SecurityEventLog[] = [
     status: 'PASSED',
     detail: 'WebAuthn FIDO2 public key assertion verified via hardware biometric authenticator (TouchID / Android Fingerprint).',
     payloadSnippet: 'authenticatorData: flags(ED+AT), signCount=14, credId=0x88f21a...'
+  },
+  {
+    id: 'log-106',
+    timestamp: '28 mins ago',
+    type: 'BIOMETRIC_AUTH',
+    status: 'BLOCKED',
+    detail: 'Biometric verification rejected: Hardware sensor reported fingerprint mismatch during Escrow fund release challenge.',
+    payloadSnippet: 'navigator.credentials.get() -> NotAllowedError: The operation either timed out or was not allowed by the hardware sensor.'
+  },
+  {
+    id: 'log-107',
+    timestamp: '1 hour ago',
+    type: 'BIOMETRIC_AUTH',
+    status: 'PASSED',
+    detail: 'Hardware biometric token authentication successful for high-value TSh 1,250,000 order authorization.',
+    payloadSnippet: 'authenticatorData: flags(ED+UP), signCount=13, verifiedECDSA_P256=true'
   }
 ];
