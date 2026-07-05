@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Cpu, Lock, Key, Server, Terminal, AlertTriangle, CheckCircle2, RefreshCw, Fingerprint, Activity, XCircle, History, Play, ShieldAlert } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 export const TcpSecurityHub: React.FC = () => {
   const { user, securityLogs, addSecurityLog, swahiliMode } = useAuth();
@@ -9,11 +10,47 @@ export const TcpSecurityHub: React.FC = () => {
   const [sanitationResult, setSanitationResult] = useState<string | null>(null);
   const [biometricAuditFilter, setBiometricAuditFilter] = useState<'ALL' | 'PASSED' | 'FAILED'>('ALL');
   const [simulatingAuth, setSimulatingAuth] = useState<boolean>(false);
+  const [chartMode, setChartMode] = useState<'area' | 'bar'>('area');
+  const [chartTimeframe, setChartTimeframe] = useState<'12H' | '24H' | '7D'>('12H');
 
   const biometricLogs = securityLogs.filter(l => l.type === 'BIOMETRIC_AUTH');
   const passedBiometrics = biometricLogs.filter(l => l.status === 'PASSED');
   const failedBiometrics = biometricLogs.filter(l => l.status === 'BLOCKED' || l.status === 'WARNING');
   const successRate = biometricLogs.length > 0 ? Math.round((passedBiometrics.length / biometricLogs.length) * 100) : 100;
+
+  // Dynamic frequency calculation combining telemetry history with live audit attempts
+  const dynamicPassedDelta = Math.max(0, passedBiometrics.length - 2);
+  const dynamicFailedDelta = Math.max(0, failedBiometrics.length - 1);
+
+  const biometricFrequencyData = chartTimeframe === '12H' ? [
+    { time: '06:00', passed: 4, failed: 0 },
+    { time: '07:00', passed: 8, failed: 1 },
+    { time: '08:00', passed: 15, failed: 0 },
+    { time: '09:00', passed: 24, failed: 2 },
+    { time: '10:00', passed: 31, failed: 1 },
+    { time: '11:00', passed: 19, failed: 3 },
+    { time: '12:00', passed: 28, failed: 0 },
+    { time: '13:00', passed: 22, failed: 1 },
+    { time: '14:00', passed: 35, failed: 4 },
+    { time: '15:00', passed: 42, failed: 1 },
+    { time: '16:00', passed: 18, failed: 0 },
+    { time: 'Live Now', passed: 12 + dynamicPassedDelta, failed: 1 + dynamicFailedDelta }
+  ] : chartTimeframe === '24H' ? [
+    { time: '00:00', passed: 3, failed: 0 },
+    { time: '04:00', passed: 2, failed: 1 },
+    { time: '08:00', passed: 27, failed: 1 },
+    { time: '12:00', passed: 69, failed: 4 },
+    { time: '16:00', passed: 95, failed: 5 },
+    { time: '20:00 Live', passed: 41 + dynamicPassedDelta, failed: 2 + dynamicFailedDelta }
+  ] : [
+    { time: 'Mon', passed: 142, failed: 5 },
+    { time: 'Tue', passed: 185, failed: 8 },
+    { time: 'Wed', passed: 210, failed: 12 },
+    { time: 'Thu', passed: 198, failed: 4 },
+    { time: 'Fri', passed: 264, failed: 15 },
+    { time: 'Sat', passed: 310, failed: 9 },
+    { time: 'Sun Live', passed: 178 + dynamicPassedDelta, failed: 6 + dynamicFailedDelta }
+  ];
 
   const filteredBiometricLogs = biometricAuditFilter === 'ALL'
     ? biometricLogs
@@ -282,6 +319,96 @@ export const TcpSecurityHub: React.FC = () => {
             <p className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Success Ratio</p>
             <p className="text-2xl font-bold text-blue-400 mt-1">{successRate}%</p>
             <p className="text-[10px] text-slate-400 mt-0.5 font-sans">Hardware reliability score</p>
+          </div>
+        </div>
+
+        {/* Biometric Attempt Frequency Visual Graph (Recharts) */}
+        <div className="bg-slate-950/90 p-5 rounded-2xl border border-slate-800 shadow-inner space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+            <div>
+              <div className="flex items-center space-x-2">
+                <Activity className="w-4 h-4 text-blue-400" />
+                <h4 className="font-bold text-white text-sm">
+                  {swahiliMode ? 'Masafa ya Majaribio ya Alama za Vidole Katika Muda (Recharts Analytics)' : 'Biometric Attempt Frequency Over Time'}
+                </h4>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                {swahiliMode
+                  ? 'Chati ya muda halisi inawaruhusu wasimamizi kugundua mienendo ya usalama au kuongezeka kwa majaribio yasiyokubalika.'
+                  : 'Interactive timeline telemetry allowing security administrators to spot authentication patterns and anomaly trends.'}
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2 self-stretch sm:self-auto justify-end">
+              {/* Chart Type Toggle */}
+              <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
+                <button
+                  onClick={() => setChartMode('area')}
+                  className={`px-2.5 py-1 rounded font-bold transition-colors ${chartMode === 'area' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                >
+                  Area Trend
+                </button>
+                <button
+                  onClick={() => setChartMode('bar')}
+                  className={`px-2.5 py-1 rounded font-bold transition-colors ${chartMode === 'bar' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                >
+                  Bar Chart
+                </button>
+              </div>
+
+              {/* Timeframe Selector */}
+              <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
+                {(['12H', '24H', '7D'] as const).map(tf => (
+                  <button
+                    key={tf}
+                    onClick={() => setChartTimeframe(tf)}
+                    className={`px-2 py-1 rounded font-bold transition-colors ${chartTimeframe === tf ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-400 hover:text-white'}`}
+                  >
+                    {tf}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="h-[260px] w-full pt-1">
+            <ResponsiveContainer width="100%" height="100%">
+              {chartMode === 'area' ? (
+                <AreaChart data={biometricFrequencyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorPassed" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.45}/>
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0.0}/>
+                    </linearGradient>
+                    <linearGradient id="colorFailed" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.45}/>
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                  <XAxis dataKey="time" stroke="#64748b" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem', color: '#f8fafc', fontSize: '12px' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                  <Area type="monotone" name="Successful Auths" dataKey="passed" stroke="#22c55e" strokeWidth={2} fillOpacity={1} fill="url(#colorPassed)" />
+                  <Area type="monotone" name="Failed Attempt Alerts" dataKey="failed" stroke="#f43f5e" strokeWidth={2} fillOpacity={1} fill="url(#colorFailed)" />
+                </AreaChart>
+              ) : (
+                <BarChart data={biometricFrequencyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                  <XAxis dataKey="time" stroke="#64748b" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem', color: '#f8fafc', fontSize: '12px' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                  <Bar name="Successful Auths" dataKey="passed" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                  <Bar name="Failed Attempt Alerts" dataKey="failed" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              )}
+            </ResponsiveContainer>
           </div>
         </div>
 

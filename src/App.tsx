@@ -179,7 +179,7 @@ const MainApplication: React.FC = () => {
 
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 text-xs py-8 px-6 pb-28">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
             <h4 className="font-bold text-white text-sm mb-2">SmartTrade Africa Ltd</h4>
             <p className="text-slate-400 leading-relaxed">Tanzania's trusted digital commerce platform. Designed to eliminate online payment fraud and build customer trust.</p>
@@ -197,29 +197,21 @@ const MainApplication: React.FC = () => {
             <h4 className="font-bold text-white text-sm mb-2">Tanzania Delivery Regions</h4>
             <p className="text-slate-400 leading-relaxed">Dar es Salaam, Arusha, Mwanza, Dodoma, Zanzibar (Unguja and Pemba), Moshi, Tanga, Mbeya, and Morogoro.</p>
           </div>
-          <div>
-            <h4 className="font-bold text-white text-sm mb-2">Security Compliance</h4>
-            <p className="text-blue-400 font-mono text-[11px] space-y-1 bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
-              <span className="block">✔ HTTPS TLS 1.3 Active</span>
-              <span className="block">✔ SQLi Parameterized Wrapper</span>
-              <span className="block">✔ XSS and CSRF Token Validation</span>
-            </p>
-          </div>
         </div>
         <div className="max-w-7xl mx-auto pt-6 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between text-[10px] uppercase tracking-widest font-bold text-slate-500 gap-4">
           <div className="flex gap-6">
             <span>&copy; 2024 SmartTrade Africa Ltd</span>
             <span className="hover:text-slate-300 cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="hover:text-slate-300 cursor-pointer transition-colors">TCP Compliance Statement</span>
+            <span className="hover:text-slate-300 cursor-pointer transition-colors">Terms of Service</span>
           </div>
           <div className="flex items-center gap-4">
-            <span>System Status: <span className="text-green-500">Secure</span></span>
+            <span>System Status: <span className="text-green-500">Active</span></span>
             <span className="flex items-center gap-1.5 text-slate-300">
               <svg className="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
               </svg>
-              Secure API Connected
+              Platform Connected
             </span>
           </div>
         </div>

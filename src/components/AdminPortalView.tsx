@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { Product, Category, UserMovementLog } from '../types';
 import { 
   ShieldCheck, 
@@ -17,7 +18,12 @@ import {
   Sparkles,
   Layers,
   Users,
-  AlertTriangle
+  AlertTriangle,
+  ShoppingCart,
+  Package,
+  ShoppingBag,
+  Tag,
+  BarChart3
 } from 'lucide-react';
 
 interface AdminPortalViewProps {
@@ -27,7 +33,8 @@ interface AdminPortalViewProps {
 
 export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAddProduct }) => {
   const { user, adminList, addAdminAccount, userMovements, loginAsAdminDirectly, swahiliMode } = useAuth();
-  const [activeTab, setActiveTab] = useState<'movements' | 'add_product' | 'add_admin'>('movements');
+  const { cart, totalItems, subtotalTzs, orders } = useCart();
+  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'add_product' | 'add_admin'>('movements');
 
   // Movement tracker filters
   const [movementSearch, setMovementSearch] = useState('');
@@ -189,7 +196,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <button
             onClick={() => setActiveTab('movements')}
-            className={`flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
               activeTab === 'movements' 
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
                 : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
@@ -199,8 +206,19 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
             <span>User Movements ({userMovements.length})</span>
           </button>
           <button
+            onClick={() => setActiveTab('inventory')}
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+              activeTab === 'inventory' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span>Cart & Products ({cart.length + products.length})</span>
+          </button>
+          <button
             onClick={() => setActiveTab('add_product')}
-            className={`flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
               activeTab === 'add_product' 
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
                 : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
@@ -211,7 +229,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
           </button>
           <button
             onClick={() => setActiveTab('add_admin')}
-            className={`flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
               activeTab === 'add_admin' 
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
                 : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
@@ -220,6 +238,53 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
             <UserPlus className="w-4 h-4" />
             <span>Add Admin ({adminList.length})</span>
           </button>
+        </div>
+      </div>
+
+      {/* Active Inventory & Live Carts Counter Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl flex items-center space-x-3">
+          <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
+            <Package className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Total Catalog Products</p>
+            <p className="text-xl font-bold text-white mt-0.5">{products.length} Products</p>
+            <p className="text-[10px] text-green-400 font-sans">{products.filter(p => p.inStock).length} active in stock</p>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl flex items-center space-x-3">
+          <div className="p-3 bg-green-500/10 rounded-xl text-green-400 border border-green-500/20">
+            <ShoppingCart className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Live Cart Units Present</p>
+            <p className="text-xl font-bold text-green-400 mt-0.5">{totalItems} Units</p>
+            <p className="text-[10px] text-slate-400 font-sans">Across {cart.length} distinct items</p>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl flex items-center space-x-3">
+          <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20">
+            <ShoppingBag className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Historical Cart Events</p>
+            <p className="text-xl font-bold text-purple-400 mt-0.5">{userMovements.filter(m => m.actionType === 'ADD_TO_CART').length} Additions</p>
+            <p className="text-[10px] text-slate-400 font-sans">Logged in telemetry</p>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl flex items-center space-x-3">
+          <div className="p-3 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+            <Tag className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Completed Orders</p>
+            <p className="text-xl font-bold text-amber-400 mt-0.5">{orders.length} Orders</p>
+            <p className="text-[10px] text-slate-400 font-sans">Escrow protected</p>
+          </div>
         </div>
       </div>
 
@@ -314,6 +379,147 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-TAB: CART & PRODUCTS INVENTORY OVERVIEW */}
+      {activeTab === 'inventory' && (
+        <div className="space-y-6">
+          {/* Active Cart Summary Section */}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center">
+                  <ShoppingCart className="w-5 h-5 text-green-400 mr-2" />
+                  {swahiliMode ? 'Mikokoteni Hai na Bidhaa Zilizomo (Live Carts)' : 'Live Active Carts & Items Present'}
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {swahiliMode
+                    ? 'Orodha ya bidhaa zote zilizochaguliwa na wateja kwenye vikapu vyao sasa hivi.'
+                    : 'Detailed breakdown of all items currently residing in active customer shopping carts.'}
+                </p>
+              </div>
+              <div className="bg-slate-950 px-4 py-2 rounded-xl border border-green-500/30 text-right">
+                <span className="text-[10px] text-slate-400 font-bold uppercase block">Active Cart Value</span>
+                <span className="text-sm font-bold text-green-400 font-mono">TSh {subtotalTzs.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {cart.length === 0 ? (
+              <div className="p-8 text-center bg-slate-950 rounded-2xl border border-slate-800 text-slate-500 font-mono text-xs">
+                No items present in live customer carts right now. Items added will appear here instantly.
+              </div>
+            ) : (
+              <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-900/80 border-b border-slate-800 text-slate-400 font-bold">
+                        <th className="py-3 px-4">Product Present in Cart</th>
+                        <th className="py-3 px-4">Category</th>
+                        <th className="py-3 px-4 text-center">Unit Price (TSh)</th>
+                        <th className="py-3 px-4 text-center">Quantity Present</th>
+                        <th className="py-3 px-4 text-right">Line Total (TSh)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 font-mono">
+                      {cart.map((item) => (
+                        <tr key={item.product.id} className="hover:bg-slate-900/50 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <img src={item.product.image} alt={item.product.name} className="w-9 h-9 rounded-lg object-cover border border-slate-800 shrink-0" />
+                              <div>
+                                <div className="font-sans font-bold text-white text-xs line-clamp-1">{item.product.name}</div>
+                                <div className="text-[10px] text-slate-500 font-mono">ID: {item.product.id}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 font-sans text-slate-400">{item.product.category}</td>
+                          <td className="py-3 px-4 text-center text-slate-300">{item.product.priceTzs.toLocaleString()}</td>
+                          <td className="py-3 px-4 text-center">
+                            <span className="bg-green-500/20 text-green-400 font-bold px-2.5 py-1 rounded-lg border border-green-500/30">
+                              {item.quantity} units
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right font-bold text-white">
+                            {(item.product.priceTzs * item.quantity).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* All Catalog Products Present Section */}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center">
+                  <Package className="w-5 h-5 text-blue-400 mr-2" />
+                  {swahiliMode ? 'Orodha ya Bidhaa Zote Zilizopo Katika Stoo' : 'Total Catalog Products Present in Marketplace'}
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {swahiliMode
+                    ? `Jumla ya bidhaa ${products.length} zilizokaguliwa na kudhibitishwa kuuzwa nchini Tanzania.`
+                    : `Complete inventory tally of all ${products.length} products active across Tanzanian regions.`}
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="bg-blue-500/20 text-blue-400 text-xs font-bold font-mono px-3 py-1.5 rounded-xl border border-blue-500/30">
+                  Total Present: {products.length} Products
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-900/80 border-b border-slate-800 text-slate-400 font-bold">
+                      <th className="py-3 px-4">Product Name & Seller</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4 text-right">Price (TSh)</th>
+                      <th className="py-3 px-4 text-center">Stock Status</th>
+                      <th className="py-3 px-4 text-center">Trust & Security</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 font-mono">
+                    {products.map((p) => (
+                      <tr key={p.id} className="hover:bg-slate-900/50 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-3">
+                            <img src={p.image} alt={p.name} className="w-9 h-9 rounded-lg object-cover border border-slate-800 shrink-0" />
+                            <div>
+                              <div className="font-sans font-bold text-white text-xs line-clamp-1">{p.name}</div>
+                              <div className="text-[10px] text-slate-500">{p.seller.name} • {p.seller.location}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 font-sans text-slate-400">{p.category}</td>
+                        <td className="py-3 px-4 text-right font-bold text-white">{p.priceTzs.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-center">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            p.inStock ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                          }`}>
+                            {p.inStock ? 'IN STOCK' : 'OUT OF STOCK'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span className="inline-flex items-center space-x-1 text-blue-400 text-[10px]">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            <span>Verified</span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

@@ -45,7 +45,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         <div className="max-w-2xl space-y-4 relative z-10">
           <div className="inline-flex items-center space-x-2 bg-blue-500 text-white px-2.5 py-1 rounded text-[10px] font-bold tracking-wider uppercase shadow">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{swahiliMode ? 'TAM and TCP COMPLIANT • TANZANIA' : 'TAM COMPLIANT • SECURE COMMERCE'}</span>
+            <span>{swahiliMode ? 'JUKWAA LA BIASHARA YA KIDIJITALI • TANZANIA' : 'TANZANIA DIGITAL COMMERCE • VERIFIED PLATFORM'}</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight text-white">
