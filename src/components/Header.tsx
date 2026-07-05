@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { 
   Search, MapPin, ShoppingCart, ShieldCheck, Fingerprint, 
-  Globe, ChevronDown, UserCheck, Lock, LogOut 
+  Globe, ChevronDown, UserCheck, Lock, LogOut, Award 
 } from 'lucide-react';
 import { Category } from '../types';
 
@@ -40,8 +40,11 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab
 }) => {
   const { user, logout, swahiliMode, setSwahiliMode } = useAuth();
-  const { totalItems } = useCart();
+  const { totalItems, orders } = useCart();
   const [deliveryCity, setDeliveryCity] = useState('Dar es Salaam (Posta)');
+
+  const totalPurchaseTzs = orders.reduce((sum, ord) => sum + (ord.totalTzs || 0), 0);
+  const loyaltyPoints = Math.floor(totalPurchaseTzs / 100);
 
   return (
     <header className="bg-slate-900 text-slate-200 sticky top-0 z-40 shadow-2xl border-b border-slate-800">
@@ -127,14 +130,20 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-3">
               <div 
                 onClick={() => setActiveTab('orders')}
-                className="cursor-pointer hover:bg-slate-800 px-2.5 py-1 rounded-lg text-left transition-colors"
+                className="cursor-pointer hover:bg-slate-800 px-2.5 py-1 rounded-lg text-left transition-colors group"
               >
-                <p className="text-[10px] text-slate-400">
-                  {swahiliMode ? 'Karibu,' : 'Welcome,'} {user.name.split(' ')[0]}
-                </p>
-                <p className="text-xs font-bold flex items-center text-white">
+                <div className="flex items-center space-x-1.5">
+                  <p className="text-[10px] text-slate-400">
+                    {swahiliMode ? 'Karibu,' : 'Welcome,'} {user.name.split(' ')[0]}
+                  </p>
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm" title="SmartTrade Loyalty Points earned from purchase totals">
+                    <Award className="w-2.5 h-2.5 mr-0.5 text-amber-400" />
+                    {loyaltyPoints.toLocaleString()} {swahiliMode ? 'Pointi' : 'Pts'}
+                  </span>
+                </div>
+                <p className="text-xs font-bold flex items-center text-white mt-0.5 group-hover:text-blue-300 transition-colors">
                   <UserCheck className="w-3.5 h-3.5 mr-1.5 text-blue-500" />
-                  {swahiliMode ? 'Akaunti Yangu' : 'My Account'}
+                  {swahiliMode ? 'Akaunti & Tuzo' : 'Profile & Rewards'}
                 </p>
               </div>
               <button 

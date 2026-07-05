@@ -5,6 +5,7 @@ import { TcpSecurityHub } from './TcpSecurityHub';
 import { TamUtautDashboard } from './TamUtautDashboard';
 import { SecurityHealthIndicators } from './SecurityHealthIndicators';
 import { BiometricThresholdAlert } from './BiometricThresholdAlert';
+import { ProductSalesAnalytics } from './ProductSalesAnalytics';
 import { Product, Category, UserMovementLog } from '../types';
 import { 
   ShieldCheck, 
@@ -44,7 +45,7 @@ interface AdminPortalViewProps {
 export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAddProduct }) => {
   const { user, adminList, addAdminAccount, userMovements, swahiliMode, biometricAttemptLogs } = useAuth();
   const { cart, totalItems, subtotalTzs, orders } = useCart();
-  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'add_product' | 'add_admin' | 'security_health'>('movements');
+  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'sales_analytics' | 'add_product' | 'add_admin' | 'security_health'>('movements');
 
   // Biometric log filter
   const [biometricFilter, setBiometricFilter] = useState<string>('ALL');
@@ -267,6 +268,17 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
             <span>TAM & UTAUT Analytics</span>
           </button>
           <button
+            onClick={() => setActiveTab('sales_analytics')}
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+              activeTab === 'sales_analytics' 
+                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/20' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
+            }`}
+          >
+            <BarChart3 className="w-4 h-4 text-cyan-400" />
+            <span>{swahiliMode ? 'Mauzo na Mwenendo (Recharts)' : 'Product Sales Trends (Recharts)'}</span>
+          </button>
+          <button
             onClick={() => setActiveTab('add_product')}
             className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
               activeTab === 'add_product' 
@@ -437,6 +449,32 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
       {/* SUB-TAB: CART & PRODUCTS INVENTORY OVERVIEW */}
       {activeTab === 'inventory' && (
         <div className="space-y-6">
+          {/* Quick Jump to Sales Analytics Banner */}
+          <div className="bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-900 border border-cyan-500/30 p-5 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center space-x-3.5">
+              <div className="p-3 bg-cyan-500/10 rounded-2xl text-cyan-400 border border-cyan-500/20">
+                <BarChart3 className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">
+                  {swahiliMode ? 'Mchanganuo wa Mauzo na Grafu za Recharts' : 'Product Sales Performance & Trends Engine'}
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {swahiliMode
+                    ? 'Tazama mwenendo wa mauzo, bidhaa zinazoongoza na kategoria kupitia grafu shirikishi za Recharts.'
+                    : 'Visualize chronological revenue trends, unit velocity, and product category breakdowns using Recharts.'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('sales_analytics')}
+              className="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/20 transition-all shrink-0 flex items-center justify-center space-x-2"
+            >
+              <span>{swahiliMode ? 'Fungua Grafu za Mauzo' : 'Launch Sales Dashboard'}</span>
+              <span>→</span>
+            </button>
+          </div>
+
           {/* Active Cart Summary Section */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
@@ -725,6 +763,13 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
       {activeTab === 'tam_analyzer' && (
         <div className="space-y-6">
           <TamUtautDashboard />
+        </div>
+      )}
+
+      {/* SUB-TAB: PRODUCT SALES PERFORMANCE & TRENDS (RECHARTS) */}
+      {activeTab === 'sales_analytics' && (
+        <div className="space-y-6">
+          <ProductSalesAnalytics products={products} />
         </div>
       )}
 

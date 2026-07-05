@@ -151,7 +151,7 @@ const MainApplication: React.FC = () => {
         </div>
         <div className="max-w-7xl mx-auto pt-6 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between text-[10px] uppercase tracking-widest font-bold text-slate-500 gap-4">
           <div className="flex gap-6">
-            <span>&copy; 2024 SmartTrade Africa Ltd</span>
+            <span>&copy; 2026 SmartTrade Africa Ltd</span>
             <span className="hover:text-slate-300 cursor-pointer transition-colors">Privacy Policy</span>
             <span className="hover:text-slate-300 cursor-pointer transition-colors">Terms of Service</span>
           </div>
