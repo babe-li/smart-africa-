@@ -3,6 +3,7 @@ import { Product } from '../types';
 import { formatTzs } from '../utils/format';
 import { X, Star, ShieldCheck, Truck, CheckCircle2, Lock, ShoppingCart, Award } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { calculateProductTrustScore } from '../utils/trustScore';
 
 interface ProductModalProps {
   product: Product | null;
@@ -19,6 +20,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
   const { swahiliMode } = useAuth();
   if (!product) return null;
+
+  const trustBreakdown = calculateProductTrustScore(product, swahiliMode);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
@@ -51,24 +54,47 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               />
             </div>
 
-            {/* Regulatory and Enterprise Trust Box */}
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 space-y-2">
-              <div className="flex items-center space-x-2 text-blue-300 font-bold text-xs">
-                <Award className="w-4 h-4 text-blue-400" />
-                <span>Verified Tanzanian Vendor Profile</span>
+            {/* Regulatory and Enterprise TAM/UTAUT Trust Box */}
+            <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2.5 shadow-inner">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center space-x-1.5 text-blue-300 font-bold">
+                  <Award className="w-4 h-4 text-blue-400" />
+                  <span>{swahiliMode ? 'Tathmini ya TAM & UTAUT' : 'TAM/UTAUT Product Trust Model'}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${trustBreakdown.badgeBg} ${trustBreakdown.textColor} ${trustBreakdown.borderColor}`}>
+                  {trustBreakdown.totalScore}/100 Score
+                </span>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 font-medium">
-                <div className="bg-slate-950 p-2 rounded border border-slate-800">
-                  <p className="text-slate-500 text-[9px]">SELLER NAME</p>
+
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="bg-slate-900 p-2 rounded-lg border border-slate-800/80">
+                  <p className="text-slate-500 text-[9px] uppercase tracking-wider">SELLER LEGITIMACY</p>
                   <p className="font-bold text-white truncate">{product.seller.name}</p>
                 </div>
-                <div className="bg-slate-950 p-2 rounded border border-slate-800">
-                  <p className="text-slate-500 text-[9px]">TRUST INDEX</p>
-                  <p className="font-bold text-green-400">{product.seller.trustScore}% Verified</p>
+                <div className="bg-slate-900 p-2 rounded-lg border border-slate-800/80">
+                  <p className="text-slate-500 text-[9px] uppercase tracking-wider">TRUST LEVEL</p>
+                  <p className={`font-bold ${trustBreakdown.textColor}`}>{trustBreakdown.tier}</p>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400">
-                🔒 Funds held in TCRA-supervised escrow until you confirm delivery in Dar es Salaam / Tanzania.
+
+              {/* Itemized TAM/UTAUT breakdown */}
+              <div className="space-y-1.5 pt-1 border-t border-slate-800/80 text-[10px]">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">• UTAUT Seller Status:</span>
+                  <span className="font-mono font-bold text-blue-400">{trustBreakdown.factors.sellerVerification.score}/{trustBreakdown.factors.sellerVerification.max} pts</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">• TAM Positive Tx History:</span>
+                  <span className="font-mono font-bold text-emerald-400">{trustBreakdown.factors.transactionHistory.score}/{trustBreakdown.factors.transactionHistory.max} pts</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">• UTAUT Escrow & Effort:</span>
+                  <span className="font-mono font-bold text-amber-400">{trustBreakdown.factors.escrowAndDelivery.score}/{trustBreakdown.factors.escrowAndDelivery.max} pts</span>
+                </div>
+              </div>
+
+              <p className="text-[10px] text-slate-400 pt-1">
+                🔒 Funds held in TCRA-supervised escrow until delivery is confirmed by fingerprint or Face ID.
               </p>
             </div>
           </div>

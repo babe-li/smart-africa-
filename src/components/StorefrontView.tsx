@@ -3,6 +3,7 @@ import { Product, Category } from '../types';
 import { ProductCard } from './ProductCard';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Truck, Fingerprint, Award, Sparkles, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { calculateProductTrustScore } from '../utils/trustScore';
 
 interface StorefrontViewProps {
   products: Product[];
@@ -26,7 +27,9 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
     .filter(p => selectedCategory === 'All' || p.category === selectedCategory)
     .sort((a, b) => {
       if (sortBy === 'rating') return b.rating - a.rating;
-      if (sortBy === 'trust') return b.seller.trustScore - a.seller.trustScore;
+      if (sortBy === 'trust') {
+        return calculateProductTrustScore(b, swahiliMode).totalScore - calculateProductTrustScore(a, swahiliMode).totalScore;
+      }
       if (sortBy === 'price_low') return a.priceTzs - b.priceTzs;
       if (sortBy === 'price_high') return b.priceTzs - a.priceTzs;
       return 0;
@@ -110,10 +113,33 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-200 outline-none cursor-pointer focus:border-blue-500 transition-colors"
           >
             <option value="rating">Top Rated (Stars)</option>
-            <option value="trust">Highest Vendor Trust Score</option>
+            <option value="trust">Highest TAM/UTAUT Trust Score</option>
             <option value="price_low">Price: Low to High (TSh)</option>
             <option value="price_high">Price: High to Low (TSh)</option>
           </select>
+        </div>
+      </div>
+
+      {/* TAM/UTAUT Trust Score Explainer Header */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+        <div className="flex items-center space-x-2.5">
+          <div className="p-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white">
+              {swahiliMode ? 'Viashirio vya Uaminifu vya bidhaa (TAM & UTAUT Model)' : 'Individual Product Trust Score Indicators (TAM & UTAUT Model)'}
+            </h4>
+            <p className="text-[10px] text-slate-400 leading-tight">
+              {swahiliMode 
+                ? 'Kila bidhaa huhesabiwa alama /100 kutokana na uhakiki wa muuzaji (UTAUT), historia na nyota za wanunuzi (TAM), na ulinzi wa Escrow.' 
+                : 'Calculated dynamically per product combining UTAUT seller verification status, TAM positive transaction history, and enclave escrow reliability.'}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2 shrink-0 self-end sm:self-auto text-[11px] font-bold">
+          <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">98+ Elite A+</span>
+          <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">95+ High A</span>
         </div>
       </div>
 
