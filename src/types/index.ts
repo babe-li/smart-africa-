@@ -1,10 +1,10 @@
 export type Category = 
   | 'All' 
-  | 'Electronics & Gadgets' 
-  | 'Solar & Power Solutions' 
-  | 'Agriculture & Coffee' 
-  | 'Fashion & Kitenge' 
-  | 'Home & Kitchen';
+  | 'Electronics and Gadgets' 
+  | 'Solar and Power Solutions' 
+  | 'Agriculture and Coffee' 
+  | 'Fashion and Kitenge' 
+  | 'Home and Kitchen';
 
 export interface Product {
   id: string;

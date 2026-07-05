@@ -136,7 +136,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
               <div className="mt-4">
                 <h4 className="font-bold text-xs text-slate-300 uppercase tracking-wider mb-2">
-                  {swahiliMode ? 'Vipengele Muhimu (Key Features)' : 'Key Security & Hardware Features'}
+                  {swahiliMode ? 'Vipengele Muhimu (Key Features)' : 'Key Security and Hardware Features'}
                 </h4>
                 <ul className="space-y-1.5">
                   {product.features.map((feat, idx) => (

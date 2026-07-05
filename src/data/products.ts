@@ -5,7 +5,7 @@ export const PRODUCTS: Product[] = [
     id: 'tz-phone-1',
     name: 'Samsung Galaxy S24 Ultra 5G (512GB, Titanium Gray)',
     swahiliName: 'Simu ya Kisasa ya Samsung S24 Ultra',
-    category: 'Electronics & Gadgets',
+    category: 'Electronics and Gadgets',
     priceTzs: 3450000,
     originalPriceTzs: 3800000,
     rating: 4.9,
@@ -21,7 +21,7 @@ export const PRODUCTS: Product[] = [
     smartDelivery: true,
     description: 'Genuine factory-sealed smartphone with 24-month East African warranty. Features Snapdragon 8 Gen 3 for Galaxy, 200MP camera, built-in S-Pen, and hardware-level Knox security enclave.',
     features: [
-      'Hardware Knox Vault Security & Biometric Sensor',
+      'Hardware Knox Vault Security and Biometric Sensor',
       'Dual SIM + eSIM (Supports Vodacom, Tigo, Airtel 5G)',
       '5000mAh Battery with 45W Fast Charging',
       'Verified by TCRA (Tanzania Communications Regulatory Authority)'
@@ -32,7 +32,7 @@ export const PRODUCTS: Product[] = [
     id: 'tz-solar-1',
     name: 'SunPower Hybrid Solar Inverter System 3kVA + 200Ah Gel Battery',
     swahiliName: 'Mfumo Kamili wa Umeme wa Jua nyumbani',
-    category: 'Solar & Power Solutions',
+    category: 'Solar and Power Solutions',
     priceTzs: 1850000,
     originalPriceTzs: 2100000,
     rating: 4.8,
@@ -50,7 +50,7 @@ export const PRODUCTS: Product[] = [
     features: [
       'Automatic transfer switch (<10ms cutoff)',
       'Includes smart mobile app energy monitoring',
-      'Surge protection & lightning arrestor integrated',
+      'Surge protection and lightning arrestor integrated',
       '3-Year full manufacturer warranty in Tanzania'
     ],
     securityVerified: true
@@ -59,7 +59,7 @@ export const PRODUCTS: Product[] = [
     id: 'tz-coffee-1',
     name: 'Kilimanjaro Peaberry Arabica Coffee Beans (1kg Premium Roast)',
     swahiliName: 'Kahawa Halisi ya Kilimanjaro Peaberry',
-    category: 'Agriculture & Coffee',
+    category: 'Agriculture and Coffee',
     priceTzs: 65000,
     originalPriceTzs: 78000,
     rating: 5.0,
@@ -75,7 +75,7 @@ export const PRODUCTS: Product[] = [
     smartDelivery: true,
     description: 'Hand-picked volcanic soil Arabica coffee grown at 1,800 meters on the slopes of Mount Kilimanjaro. Features bright acidity with notes of blackcurrant, dark chocolate, and citrus.',
     features: [
-      '100% Organic & Fair Trade Certified by TBS',
+      '100% Organic and Fair Trade Certified by TBS',
       'Roasted in small artisanal batches in Moshi',
       'Degassing valve foil packaging ensures peak freshness',
       'Direct farm-to-cup traceability QR code included'
@@ -86,7 +86,7 @@ export const PRODUCTS: Product[] = [
     id: 'tz-laptop-1',
     name: 'Apple MacBook Air M3 (16GB RAM, 512GB SSD, 13.6" Liquid Retina)',
     swahiliName: 'Kompyuta Mpya ya Apple MacBook Air M3',
-    category: 'Electronics & Gadgets',
+    category: 'Electronics and Gadgets',
     priceTzs: 3850000,
     originalPriceTzs: 4200000,
     rating: 4.9,
@@ -104,16 +104,16 @@ export const PRODUCTS: Product[] = [
     features: [
       'Touch ID sensor for instant biometric authentication',
       'Up to 18 hours of battery life on a single charge',
-      'MagSafe fast charging & Thunderbolt 4 ports',
-      'Tanzania tax-paid & verified genuine import'
+      'MagSafe fast charging and Thunderbolt 4 ports',
+      'Tanzania tax-paid and verified genuine import'
     ],
     securityVerified: true
   },
   {
     id: 'tz-fashion-1',
-    name: 'Handcrafted Zanzibar Kitenge Silk & Wax Print Maxi Dress',
+    name: 'Handcrafted Zanzibar Kitenge Silk and Wax Print Maxi Dress',
     swahiliName: 'Gauni la Kisasa la Kitenge cha Zanzibar',
-    category: 'Fashion & Kitenge',
+    category: 'Fashion and Kitenge',
     priceTzs: 120000,
     originalPriceTzs: 150000,
     rating: 4.7,
@@ -140,7 +140,7 @@ export const PRODUCTS: Product[] = [
     id: 'tz-home-1',
     name: 'Smart WiFi Inverter Refrigerator 420L (Multi-Air Flow, Stainless)',
     swahiliName: 'Friji Kubwa ya Kisasa Isiyotumia Umeme Mwingi',
-    category: 'Home & Kitchen',
+    category: 'Home and Kitchen',
     priceTzs: 1650000,
     originalPriceTzs: 1890000,
     rating: 4.8,
@@ -165,9 +165,9 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'tz-spices-1',
-    name: 'Zanzibar Organic Spice Box Set (Cloves, Cardamom, Nutmeg & Cinnamon)',
+    name: 'Zanzibar Organic Spice Box Set (Cloves, Cardamom, Nutmeg and Cinnamon)',
     swahiliName: 'Sanduku la Viungo Asilia kutoka Zanzibar',
-    category: 'Agriculture & Coffee',
+    category: 'Agriculture and Coffee',
     priceTzs: 45000,
     originalPriceTzs: 55000,
     rating: 4.9,
@@ -194,7 +194,7 @@ export const PRODUCTS: Product[] = [
     id: 'tz-solar-2',
     name: 'Portable Solar Power Station 500W / 518Wh Lithium Iron Phosphate',
     swahiliName: 'Benki Kubwa ya Umeme wa Jua ya Kubeba',
-    category: 'Solar & Power Solutions',
+    category: 'Solar and Power Solutions',
     priceTzs: 890000,
     originalPriceTzs: 990000,
     rating: 4.8,
@@ -212,7 +212,7 @@ export const PRODUCTS: Product[] = [
     features: [
       'LiFePO4 battery rated for 3000+ charge cycles',
       'Dual 220V AC outlets + USB-C 100W Power Delivery',
-      'Integrated LED emergency flashlight & SOS beacon',
+      'Integrated LED emergency flashlight and SOS beacon',
       'Weighs only 6.2 kg with sturdy carry handle'
     ],
     securityVerified: true

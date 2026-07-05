@@ -36,7 +36,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
   // New Product Form state
   const [prodName, setProdName] = useState('');
   const [prodSwahiliName, setProdSwahiliName] = useState('');
-  const [prodCategory, setProdCategory] = useState<Category>('Electronics & Gadgets');
+  const [prodCategory, setProdCategory] = useState<Category>('Electronics and Gadgets');
   const [prodPrice, setProdPrice] = useState<number>(150000);
   const [prodOrigPrice, setProdOrigPrice] = useState<number>(180000);
   const [prodImage, setProdImage] = useState('https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80');
@@ -45,7 +45,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
   const [prodDesc, setProdDesc] = useState('');
   const [prodFeatureInput, setProdFeatureInput] = useState('');
   const [prodFeatures, setProdFeatures] = useState<string[]>([
-    'TCRA Verified & Escrow Protected',
+    'TCRA Verified and Escrow Protected',
     '12-Month East African Warranty'
   ]);
   const [prodSuccessMsg, setProdSuccessMsg] = useState('');
@@ -178,7 +178,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
               </span>
             </div>
             <h1 className="text-xl font-bold text-white mt-1">
-              {swahiliMode ? 'Kituo cha Utawala cha SmartTrade' : 'SmartTrade Africa Admin & Movement Enclave'}
+              {swahiliMode ? 'Kituo cha Utawala cha SmartTrade' : 'SmartTrade Africa Admin and Movement Enclave'}
             </h1>
             <p className="text-xs text-slate-400">
               Logged in as <span className="text-white font-mono">{user.email}</span> ({user.name})
@@ -230,7 +230,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
             <div>
               <h3 className="text-base font-bold text-white flex items-center">
                 <Activity className="w-5 h-5 text-blue-400 mr-2" />
-                Real-Time User Movement & Telemetry Logs
+                Real-Time User Movement and Telemetry Logs
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
                 Audit trail tracking all customer interactions, logins, product views, and cart actions across Tanzanian nodes.
@@ -376,11 +376,11 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                       onChange={(e) => setProdCategory(e.target.value as Category)}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
                     >
-                      <option value="Electronics & Gadgets">Electronics & Gadgets</option>
-                      <option value="Solar & Power Solutions">Solar & Power Solutions</option>
-                      <option value="Agriculture & Coffee">Agriculture & Coffee</option>
-                      <option value="Fashion & Kitenge">Fashion & Kitenge</option>
-                      <option value="Home & Kitchen">Home & Kitchen</option>
+                      <option value="Electronics and Gadgets">Electronics and Gadgets</option>
+                      <option value="Solar and Power Solutions">Solar and Power Solutions</option>
+                      <option value="Agriculture and Coffee">Agriculture and Coffee</option>
+                      <option value="Fashion and Kitenge">Fashion and Kitenge</option>
+                      <option value="Home and Kitchen">Home and Kitchen</option>
                     </select>
                   </div>
 

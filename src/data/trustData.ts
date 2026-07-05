@@ -21,7 +21,7 @@ export const INITIAL_TAM_METRICS: TamMetric[] = [
     score: 96,
     description: 'Minimalist Amazon-styled layout with dual Desktop/Mobile optimization ensures even first-time smartphone shoppers in rural districts can complete orders without assistance.',
     implementedFeatures: [
-      'Adaptive Mobile Bottom Navigation Bar & Swahili language toggle support',
+      'Adaptive Mobile Bottom Navigation Bar and Swahili language toggle support',
       'Large touch targets (min 48px) for mobile usability',
       'Clear step-by-step trust indicators during payment flow',
       'Biometric Touch ID eliminates typing complex passwords on small screens'
@@ -32,9 +32,9 @@ export const INITIAL_TAM_METRICS: TamMetric[] = [
     category: 'UTAUT',
     dimension: 'Performance Expectancy',
     score: 95,
-    description: 'Users believe SmartTrade Africa dramatically improves their shopping reliability by preventing fake seller scams through strict TCRA & TBS vendor verification.',
+    description: 'Users believe SmartTrade Africa dramatically improves their shopping reliability by preventing fake seller scams through strict TCRA and TBS vendor verification.',
     implementedFeatures: [
-      'Verified Seller Trust Badges & 100-Point Vendor Score',
+      'Verified Seller Trust Badges and 100-Point Vendor Score',
       'Trusted Computing Platform (TCP) hardware enclave verification',
       'Zero-knowledge token validation prevents session hijacking'
     ]
@@ -48,18 +48,18 @@ export const INITIAL_TAM_METRICS: TamMetric[] = [
     implementedFeatures: [
       'Pre-populated mobile money formats (e.g. 0754... / 0713...)',
       'Auto-saved shipping addresses with Tanzanian region selection',
-      'Instant search filter with voice & category indexing'
+      'Instant search filter with voice and category indexing'
     ]
   },
   {
     id: 'utaut-3',
     category: 'UTAUT',
-    dimension: 'Social Influence & Trust Building',
+    dimension: 'Social Influence and Trust Building',
     score: 97,
     description: 'Social validation through community reviews, SSL security badges, and clear privacy guarantees eliminates fear of online payment fraud.',
     implementedFeatures: [
-      'Verified buyer community reviews from Dar es Salaam, Arusha & Zanzibar',
-      'Prominent HTTPS 256-Bit SSL & Escrow Buyer Protection badges',
+      'Verified buyer community reviews from Dar es Salaam, Arusha and Zanzibar',
+      'Prominent HTTPS 256-Bit SSL and Escrow Buyer Protection badges',
       'Public Audit Trail of security sanitization checks'
     ]
   },

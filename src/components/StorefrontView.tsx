@@ -45,19 +45,19 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         <div className="max-w-2xl space-y-4 relative z-10">
           <div className="inline-flex items-center space-x-2 bg-blue-500 text-white px-2.5 py-1 rounded text-[10px] font-bold tracking-wider uppercase shadow">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{swahiliMode ? 'TAM & TCP COMPLIANT • TANZANIA' : 'TAM COMPLIANT • SECURE COMMERCE'}</span>
+            <span>{swahiliMode ? 'TAM and TCP COMPLIANT • TANZANIA' : 'TAM COMPLIANT • SECURE COMMERCE'}</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight text-white">
             {swahiliMode
               ? 'Biashara Salama na Amini kwa Tanzania'
-              : 'Secure Commerce Backed by TCP Enclave & Hardware Biometrics'}
+              : 'Secure Commerce Backed by TCP Enclave and Hardware Biometrics'}
           </h1>
 
           <p className="text-sm text-slate-400 leading-relaxed font-medium">
             {swahiliMode
               ? 'Malipo yote yanalindwa 100% kupitia mfumo wa Escrow (Vodacom M-Pesa, Tigo Pesa, na Airtel Money). Uhakika wa kidijitali 100%!'
-              : 'Fingerprint authenticated payments & secure delivery. Verified trusted accounts only with transparent Tanzanian Shilling (TSh) escrow protection.'}
+              : 'Fingerprint authenticated payments and secure delivery. Verified trusted accounts only with transparent Tanzanian Shilling (TSh) escrow protection.'}
           </p>
 
           {/* Quick Trust Highlights */}
@@ -84,11 +84,11 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         <div className="flex flex-wrap gap-2 overflow-x-auto w-full md:w-auto">
           {[
             'All',
-            'Electronics & Gadgets',
-            'Solar & Power Solutions',
-            'Agriculture & Coffee',
-            'Fashion & Kitenge',
-            'Home & Kitchen'
+            'Electronics and Gadgets',
+            'Solar and Power Solutions',
+            'Agriculture and Coffee',
+            'Fashion and Kitenge',
+            'Home and Kitchen'
           ].map(cat => (
             <button
               key={cat}

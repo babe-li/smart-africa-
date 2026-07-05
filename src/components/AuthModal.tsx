@@ -130,7 +130,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div>
                   <label className="block text-slate-300 mb-1 font-semibold">
-                    {swahiliMode ? 'Mkoa / Wilaya ya Makazi' : 'Tanzania Region & District'}
+                    {swahiliMode ? 'Mkoa / Wilaya ya Makazi' : 'Tanzania Region and District'}
                   </label>
                   <select
                     value={location}
@@ -226,12 +226,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 ? 'Authenticating Enclave...'
                 : mode === 'login'
                 ? (swahiliMode ? 'Ingia Sasa' : 'Sign In Securely')
-                : (swahiliMode ? 'Sajili na Wezesha Biometrics' : 'Create Account & Enroll Biometric ID')}
+                : (swahiliMode ? 'Sajili na Wezesha Biometrics' : 'Create Account and Enroll Biometric ID')}
             </button>
           </form>
 
           <div className="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 text-center">
-            🔒 Protected against SQL Injection, XSS & CSRF via parameter wrapper sanitation.
+            🔒 Protected against SQL Injection, XSS and CSRF via parameter wrapper sanitation.
           </div>
         </div>
       </div>

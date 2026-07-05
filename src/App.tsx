@@ -189,20 +189,20 @@ const MainApplication: React.FC = () => {
             <ul className="space-y-1.5 text-slate-400">
               <li>• Trusted Computing Platform (TCP)</li>
               <li>• Fingerprint Biometric Auth (WebAuthn)</li>
-              <li>• TAM & UTAUT Acceptance Analysis</li>
+              <li>• TAM and UTAUT Acceptance Analysis</li>
               <li>• Escrow Buyer Protection Gateway</li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold text-white text-sm mb-2">Tanzania Delivery Regions</h4>
-            <p className="text-slate-400 leading-relaxed">Dar es Salaam, Arusha, Mwanza, Dodoma, Zanzibar (Unguja & Pemba), Moshi, Tanga, Mbeya, and Morogoro.</p>
+            <p className="text-slate-400 leading-relaxed">Dar es Salaam, Arusha, Mwanza, Dodoma, Zanzibar (Unguja and Pemba), Moshi, Tanga, Mbeya, and Morogoro.</p>
           </div>
           <div>
             <h4 className="font-bold text-white text-sm mb-2">Security Compliance</h4>
             <p className="text-blue-400 font-mono text-[11px] space-y-1 bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
               <span className="block">✔ HTTPS TLS 1.3 Active</span>
               <span className="block">✔ SQLi Parameterized Wrapper</span>
-              <span className="block">✔ XSS & CSRF Token Validation</span>
+              <span className="block">✔ XSS and CSRF Token Validation</span>
             </p>
           </div>
         </div>

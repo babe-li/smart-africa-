@@ -18,10 +18,10 @@ export const TamUtautDashboard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <span className="bg-blue-500/20 text-blue-400 font-mono text-xs px-2.5 py-1 rounded-full border border-blue-500/30 font-bold uppercase tracking-wider">
-              Assignment Objectives #7 & #16
+              Assignment Objectives #7 and #16
             </span>
             <h1 className="text-2xl font-bold mt-2.5 text-white">
-              {swahiliMode ? 'Tathmini ya Kukubalika kwa Teknolojia (TAM & UTAUT)' : 'Technology Acceptance Model (TAM & UTAUT) Trust Evaluation'}
+              {swahiliMode ? 'Tathmini ya Kukubalika kwa Teknolojia (TAM and UTAUT)' : 'Technology Acceptance Model (TAM and UTAUT) Trust Evaluation'}
             </h1>
             <p className="text-sm font-medium text-slate-400 max-w-3xl mt-1 leading-relaxed">
               Evaluating how hardware biometrics, M-Pesa push notifications, and clear Swahili/English UI improve Technology Adoption, Perceived Usefulness (PU), and User Confidence across East Africa.
@@ -55,7 +55,7 @@ export const TamUtautDashboard: React.FC = () => {
           </div>
           <div>
             <p className="text-xs text-slate-500 font-bold uppercase">Regulatory Badges</p>
-            <h4 className="font-bold text-white text-sm">TCRA & TBS Verified</h4>
+            <h4 className="font-bold text-white text-sm">TCRA and TBS Verified</h4>
             <p className="text-[10px] text-blue-400 font-medium">Tanzania Standard</p>
           </div>
         </div>
@@ -162,7 +162,7 @@ export const TamUtautDashboard: React.FC = () => {
       {/* Academic Conclusion Footer */}
       <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-800 space-y-3">
         <h3 className="font-bold text-sm text-blue-400 uppercase tracking-wider flex items-center gap-2">
-          💡 Software Developer & Trust Analyst Summary (Course 428)
+          💡 Software Developer and Trust Analyst Summary (Course 428)
         </h3>
         <p className="text-xs text-slate-400 leading-relaxed">
           By linking hardware security (TPM / WebAuthn) directly with localized Tanzanian payment habits (M-Pesa USSD simulation), SmartTrade Africa bridges the trust gap identified in early East African e-commerce studies. Customers perceive high usefulness because checkout takes under 15 seconds, and high ease of use due to Amazon-like clarity and Swahili support.

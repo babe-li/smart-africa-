@@ -24,7 +24,7 @@ export const OrdersView: React.FC = () => {
       <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-800 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">
-            {swahiliMode ? 'Oda Zangu & Risiti za Kielektroniki' : 'Escrow Orders & Cryptographic Receipts'}
+            {swahiliMode ? 'Oda Zangu and Risiti za Kielektroniki' : 'Escrow Orders and Cryptographic Receipts'}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             All purchases are backed by SmartTrade 100% Escrow Protection Guarantee supervised by TCRA guidelines.
@@ -114,7 +114,7 @@ export const OrdersView: React.FC = () => {
                   className="bg-blue-600 hover:bg-blue-500 text-white font-sans font-bold px-4 py-2.5 rounded-xl transition-colors flex items-center shadow-lg shadow-blue-600/20"
                 >
                   <CheckCircle2 className="w-4 h-4 mr-1.5" />
-                  Confirm Delivery & Release Escrow Funds
+                  Confirm Delivery and Release Escrow Funds
                 </button>
               </div>
             </div>

@@ -21,11 +21,11 @@ interface HeaderProps {
 
 const CATEGORIES: Category[] = [
   'All',
-  'Electronics & Gadgets',
-  'Solar & Power Solutions',
-  'Agriculture & Coffee',
-  'Fashion & Kitenge',
-  'Home & Kitchen'
+  'Electronics and Gadgets',
+  'Solar and Power Solutions',
+  'Agriculture and Coffee',
+  'Fashion and Kitenge',
+  'Home and Kitchen'
 ];
 
 export const Header: React.FC<HeaderProps> = ({
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
           <span className="hidden sm:inline text-slate-700">|</span>
           <span className="hidden md:inline text-slate-400 text-[11px]">
-            🇹🇿 TCRA & TBS E-Commerce Trust Verified
+            🇹🇿 TCRA and TBS E-Commerce Trust Verified
           </span>
         </div>
 
@@ -258,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
             activeTab === 'tcp_security' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
           }`}
         >
-          🛡️ TCP Security Enclave & Telemetry
+          🛡️ TCP Security Enclave and Telemetry
         </button>
         <button
           onClick={() => setActiveTab('tam_analyzer')}
@@ -266,7 +266,7 @@ export const Header: React.FC<HeaderProps> = ({
             activeTab === 'tam_analyzer' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
           }`}
         >
-          📊 TAM & UTAUT Trust Analyzer
+          📊 TAM and UTAUT Trust Analyzer
         </button>
         <button
           onClick={() => setActiveTab('orders')}
@@ -274,7 +274,7 @@ export const Header: React.FC<HeaderProps> = ({
             activeTab === 'orders' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
           }`}
         >
-          📦 {swahiliMode ? 'Oda & Risiti zangu' : 'Escrow Orders & Receipts'}
+          📦 {swahiliMode ? 'Oda and Risiti zangu' : 'Escrow Orders and Receipts'}
         </button>
         <button
           onClick={() => setActiveTab('admin_portal')}
@@ -284,7 +284,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'text-slate-300 hover:text-white bg-slate-800/60 px-3 py-1 rounded-lg border border-slate-700/60'
           }`}
         >
-          👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave & Telemetry'}
+          👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave and Telemetry'}
         </button>
         <span className="text-slate-800">|</span>
         <span className="text-xs text-slate-500 font-mono hidden xl:inline">

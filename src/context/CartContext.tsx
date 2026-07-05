@@ -42,8 +42,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           {
             product: {
               id: 'tz-spices-1',
-              name: 'Zanzibar Organic Spice Box Set (Cloves, Cardamom, Nutmeg & Cinnamon)',
-              category: 'Agriculture & Coffee',
+              name: 'Zanzibar Organic Spice Box Set (Cloves, Cardamom, Nutmeg and Cinnamon)',
+              category: 'Agriculture and Coffee',
               priceTzs: 45000,
               rating: 4.9,
               reviewCount: 310,

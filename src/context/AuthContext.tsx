@@ -57,7 +57,7 @@ const INITIAL_USER_MOVEMENTS: UserMovementLog[] = [
     userEmail: 'baraka.mwakio@tzmail.com',
     userName: 'Baraka Mwakio',
     actionType: 'PAGE_VIEW',
-    description: 'Browsed catalog category: Electronics & Gadgets.',
+    description: 'Browsed catalog category: Electronics and Gadgets.',
     ipOrDevice: '197.250.18.42 (Vodacom 4G)'
   },
   {
