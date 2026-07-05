@@ -60,7 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   : (swahiliMode ? 'Fungua Akaunti Mpya' : 'Secure Registration')}
               </h3>
               <p className="text-[10px] text-slate-400">
-                TCP Enclave • SHA-256 Salted Passwords • Anti-SQLi
+                TCP Enclave • SHA-256 Salted Passwords
               </p>
             </div>
           </div>
@@ -210,10 +210,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 : (swahiliMode ? 'Sajili na Wezesha Biometrics' : 'Create Account and Enroll Biometric ID')}
             </button>
           </form>
-
-          <div className="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 text-center">
-            🔒 Protected against SQL Injection, XSS and CSRF via parameter wrapper sanitation.
-          </div>
         </div>
       </div>
     </div>
