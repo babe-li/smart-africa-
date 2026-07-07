@@ -1,1 +1,104 @@
 @import "tailwindcss";
+
+/* Define Slate palette inversion when .light class is active */
+.light {
+  --color-slate-950: #f8fafc; /* Page Background */
+  --color-slate-900: #ffffff; /* Card Background */
+  --color-slate-800: #f1f5f9; /* Card Sub-sections / Alternate cards */
+  --color-slate-700: #e2e8f0; /* Borders, Dividers, Neutral controls */
+  --color-slate-600: #cbd5e1; /* Darker borders / controls */
+  
+  --color-slate-500: #475569; /* Muted texts */
+  --color-slate-400: #334155; /* Secondary texts */
+  --color-slate-300: #1e293b; /* Headings, Titles */
+  --color-slate-200: #0f172a; /* High-contrast texts */
+  --color-slate-100: #020617; /* High-contrast texts */
+  --color-slate-50: #000000;
+  
+  /* Brand color legibility adjustments in light mode (shift light neon colors to high-contrast rich shades) */
+  --color-blue-400: #2563eb; /* Map blue-400 to blue-600 */
+  --color-blue-300: #1d4ed8; /* Map blue-300 to blue-700 */
+  --color-green-400: #16a34a; /* Map green-400 to green-600 */
+  --color-green-300: #15803d; /* Map green-300 to green-700 */
+  --color-emerald-400: #059669; /* Map emerald-400 to emerald-600 */
+  --color-emerald-300: #047857; /* Map emerald-300 to emerald-700 */
+  --color-amber-400: #ca8a04; /* Map amber-400 to amber-600 */
+  --color-amber-300: #b45309; /* Map amber-300 to amber-700 */
+  --color-purple-400: #9333ea; /* Map purple-400 to purple-600 */
+  --color-purple-300: #7e22ce; /* Map purple-300 to purple-700 */
+  --color-rose-400: #e11d48; /* Map rose-400 to rose-600 */
+  --color-rose-300: #be123c; /* Map rose-300 to rose-700 */
+
+  /* Map dark semantic background containers (950) to soft, high-contrast pastel shades */
+  --color-blue-950: #eff6ff;
+  --color-green-950: #dcfce7;
+  --color-emerald-950: #d1fae5;
+  --color-amber-950: #fef3c7;
+  --color-rose-950: #ffe4e6;
+  --color-purple-950: #f3e8ff;
+
+  color-scheme: light;
+}
+
+/* In light mode, default text-white to dark text to ensure contrast on inverted slate backgrounds */
+.light .text-white {
+  color: #0f172a !important;
+}
+
+/* Revert text color back to white/light for elements on active semantic or brand colored backgrounds */
+.light button.text-white,
+.light button .text-white,
+.light button *,
+.light .bg-blue-600 *,
+.light .bg-blue-500 *,
+.light .bg-green-600 *,
+.light .bg-green-500 *,
+.light .bg-emerald-600 *,
+.light .bg-emerald-500 *,
+.light .bg-rose-600 *,
+.light .bg-rose-500 *,
+.light .bg-indigo-600 *,
+.light .bg-indigo-500 *,
+.light .bg-purple-600 *,
+.light .bg-purple-500 *,
+.light .bg-red-600 *,
+.light .bg-red-500 *,
+.light .bg-amber-600 *,
+.light .bg-amber-500 *,
+.light [class*="bg-blue-"] *,
+.light [class*="bg-green-"] *,
+.light [class*="bg-emerald-"] *,
+.light [class*="bg-rose-"] *,
+.light [class*="bg-indigo-"] *,
+.light [class*="bg-purple-"] *,
+.light [class*="bg-red-"] *,
+.light [class*="bg-amber-"] * {
+  color: #ffffff !important;
+}
+
+/* Give explicit contrast to slate texts in light mode */
+.light .text-slate-400 {
+  color: #475569 !important;
+}
+.light .text-slate-500 {
+  color: #64748b !important;
+}
+.light .text-slate-300 {
+  color: #1e293b !important;
+}
+.light .text-slate-200 {
+  color: #0f172a !important;
+}
+
+/* Ensure placeholder texts contrast nicely in light mode */
+.light input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Add custom animations/transitions for theme switching */
+.theme-transition,
+.theme-transition * {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

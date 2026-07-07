@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useTheme } from '../context/ThemeContext';
 import { 
   Search, MapPin, ShoppingCart, ShieldCheck, Fingerprint, 
-  Globe, ChevronDown, UserCheck, Lock, LogOut, Award 
+  Globe, ChevronDown, UserCheck, Lock, LogOut, Award, Sun, Moon
 } from 'lucide-react';
 import { Category } from '../types';
 
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { user, logout, swahiliMode, setSwahiliMode } = useAuth();
   const { totalItems, orders } = useCart();
+  const { theme, toggleTheme } = useTheme();
   const [deliveryCity, setDeliveryCity] = useState('Dar es Salaam (Posta)');
 
   const totalPurchaseTzs = orders.reduce((sum, ord) => sum + (ord.totalTzs || 0), 0);
@@ -178,6 +180,20 @@ export const Header: React.FC<HeaderProps> = ({
             <Globe className="w-4 h-4 mr-1.5 text-blue-400 shrink-0" />
             <span className="hidden sm:inline">{swahiliMode ? '🇹🇿 Kiswahili' : '🇬🇧 English'}</span>
             <span className="sm:hidden">{swahiliMode ? '🇹🇿 SW' : '🇬🇧 EN'}</span>
+          </button>
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            id="theme-toggle"
+            className="flex items-center text-xs bg-slate-800/90 hover:bg-slate-700 p-2 rounded-full border border-slate-700 text-amber-400 transition-all shadow-md shrink-0 active:scale-95"
+            title={theme === 'light' ? (swahiliMode ? "Badilisha kwenda Hali ya Giza" : "Switch to Dark Mode") : (swahiliMode ? "Badilisha kwenda Hali ya Mwanga" : "Switch to Light Mode")}
+          >
+            {theme === 'light' ? (
+              <Moon className="w-4 h-4 text-indigo-400 animate-pulse" />
+            ) : (
+              <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform duration-300" />
+            )}
           </button>
 
           {/* Shopping Cart Button */}

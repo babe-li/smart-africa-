@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider, useCart } from './context/CartContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { PRODUCTS } from './data/products';
 import { Product, Category } from './types';
 import { Header } from './components/Header';
@@ -18,6 +19,7 @@ import { CheckoutModal } from './components/CheckoutModal';
 const MainApplication: React.FC = () => {
   const { user, swahiliMode, logUserMovement } = useAuth();
   const { addToCart } = useCart();
+  const { theme, toggleTheme } = useTheme();
 
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('smarttrade_products');
@@ -72,7 +74,7 @@ const MainApplication: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 flex flex-col selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 flex flex-col selection:bg-blue-500 selection:text-white theme-transition">
       {/* Top Navigation */}
       <Header
         selectedCategory={selectedCategory}
@@ -236,10 +238,12 @@ const MainApplication: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <MainApplication />
-      </CartProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <MainApplication />
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
