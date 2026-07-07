@@ -32,15 +32,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <span>{swahiliMode ? 'Duka' : 'Store'}</span>
         </button>
 
-        <button
-          onClick={() => setActiveTab('orders')}
-          className={`flex flex-col items-center text-[11px] transition-colors ${
-            activeTab === 'orders' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <Package className="w-5 h-5 mb-0.5 text-blue-400" />
-          <span>{swahiliMode ? 'Oda' : 'Orders'}</span>
-        </button>
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`flex flex-col items-center text-[11px] transition-colors ${
+              activeTab === 'orders' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Package className="w-5 h-5 mb-0.5 text-blue-400" />
+            <span>{swahiliMode ? 'Oda' : 'Orders'}</span>
+          </button>
+        )}
 
         {/* Center Biometric Touch Trigger */}
         <button

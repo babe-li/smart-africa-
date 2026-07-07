@@ -74,7 +74,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {swahiliMode && product.swahiliName ? product.swahiliName : product.name}
           </h3>
 
-          {/* Seller & TAM/UTAUT Trust Indicator */}
+          {/* Seller and TAM/UTAUT Trust Indicator */}
           <div className="mt-2.5 space-y-2 bg-slate-800/80 rounded-xl p-2.5 border border-slate-700/80 transition-colors hover:border-blue-500/50 shadow-inner">
             <div className="flex items-center justify-between text-xs gap-1">
               <div className="flex items-center truncate">
@@ -88,14 +88,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   setShowTrustDetails(!showTrustDetails);
                 }}
                 className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold border shadow-sm transition-all cursor-pointer hover:scale-105 shrink-0 ${trustBreakdown.badgeBg} ${trustBreakdown.textColor} ${trustBreakdown.borderColor}`}
-                title="Calculated from UTAUT Seller Verification & TAM Transaction History"
+                title="Calculated from UTAUT Seller Verification and TAM Transaction History"
               >
                 <ShieldCheck className="w-3 h-3 mr-0.5" />
                 <span>{trustBreakdown.totalScore}/100 Trust</span>
               </button>
             </div>
 
-            {/* Compact TAM/UTAUT Tier & Progress Bar */}
+            {/* Compact TAM/UTAUT Tier and Progress Bar */}
             <div 
               onClick={(e) => {
                 e.stopPropagation();

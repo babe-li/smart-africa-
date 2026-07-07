@@ -34,12 +34,12 @@ export function calculateProductTrustScore(product: Product, swahiliMode: boolea
   const sellerBonus = Math.round((product.seller.trustScore || 90) * 0.15);
   const sellerScore = Math.min(40, baseVerification + sellerBonus);
 
-  // Factor 2: TAM Positive Transaction History & Customer Satisfaction
+  // Factor 2: TAM Positive Transaction History and Customer Satisfaction
   const ratingScore = Math.round(((product.rating || 4.5) / 5.0) * 28);
   const volumeBonus = Math.min(12, Math.round((product.reviewCount || 10) / 25));
   const historyScore = Math.min(40, ratingScore + volumeBonus);
 
-  // Factor 3: TAM Ease of Use / UTAUT Effort Expectancy & Escrow Protection
+  // Factor 3: TAM Ease of Use / UTAUT Effort Expectancy and Escrow Protection
   const securityScore = product.securityVerified ? 10 : 8;
   const deliveryScore = product.smartDelivery ? 10 : 7;
   const escrowScore = Math.min(20, securityScore + deliveryScore);
@@ -82,7 +82,7 @@ export function calculateProductTrustScore(product: Product, swahiliMode: boolea
           : `${product.rating}★ rating across ${product.reviewCount}+ positive transactions`
       },
       escrowAndDelivery: {
-        name: swahiliMode ? 'Urahisi wa Escrow na Uwasilishaji' : 'UTAUT Effort Expectancy & Escrow',
+        name: swahiliMode ? 'Urahisi wa Escrow na Uwasilishaji' : 'UTAUT Effort Expectancy and Escrow',
         score: escrowScore,
         max: 20,
         detail: swahiliMode

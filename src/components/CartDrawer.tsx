@@ -120,7 +120,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           )}
         </div>
 
-        {/* Footer & Escrow Toggle */}
+        {/* Footer and Escrow Toggle */}
         {cart.length > 0 && (
           <div className="p-4 bg-slate-950 border-t border-slate-800 space-y-3">
             {/* Escrow Buyer Protection Card */}

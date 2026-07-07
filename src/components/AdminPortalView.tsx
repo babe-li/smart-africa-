@@ -221,7 +221,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
             }`}
           >
             <ShoppingCart className="w-4 h-4" />
-            <span>Cart & Products ({cart.length + products.length})</span>
+            <span>Cart and Products ({cart.length + products.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('tcp_security')}
@@ -265,7 +265,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
             }`}
           >
             <BarChart3 className="w-4 h-4" />
-            <span>TAM & UTAUT Analytics</span>
+            <span>TAM and UTAUT Analytics</span>
           </button>
           <button
             onClick={() => setActiveTab('sales_analytics')}
@@ -303,7 +303,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
         </div>
       </div>
 
-      {/* Active Inventory & Live Carts Counter Bar */}
+      {/* Active Inventory and Live Carts Counter Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl flex items-center space-x-3">
           <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
@@ -446,7 +446,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
         </div>
       )}
 
-      {/* SUB-TAB: CART & PRODUCTS INVENTORY OVERVIEW */}
+      {/* SUB-TAB: CART and PRODUCTS INVENTORY OVERVIEW */}
       {activeTab === 'inventory' && (
         <div className="space-y-6">
           {/* Quick Jump to Sales Analytics Banner */}
@@ -457,7 +457,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white">
-                  {swahiliMode ? 'Mchanganuo wa Mauzo na Grafu za Recharts' : 'Product Sales Performance & Trends Engine'}
+                  {swahiliMode ? 'Mchanganuo wa Mauzo na Grafu za Recharts' : 'Product Sales Performance and Trends Engine'}
                 </h4>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {swahiliMode
@@ -481,7 +481,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
               <div>
                 <h3 className="text-base font-bold text-white flex items-center">
                   <ShoppingCart className="w-5 h-5 text-green-400 mr-2" />
-                  {swahiliMode ? 'Mikokoteni Hai na Bidhaa Zilizomo (Live Carts)' : 'Live Active Carts & Items Present'}
+                  {swahiliMode ? 'Mikokoteni Hai na Bidhaa Zilizomo (Live Carts)' : 'Live Active Carts and Items Present'}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {swahiliMode
@@ -569,11 +569,11 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="bg-slate-900/80 border-b border-slate-800 text-slate-400 font-bold">
-                      <th className="py-3 px-4">Product Name & Seller</th>
+                      <th className="py-3 px-4">Product Name and Seller</th>
                       <th className="py-3 px-4">Category</th>
                       <th className="py-3 px-4 text-right">Price (TSh)</th>
                       <th className="py-3 px-4 text-center">Stock Status</th>
-                      <th className="py-3 px-4 text-center">Trust & Security</th>
+                      <th className="py-3 px-4 text-center">Trust and Security</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 font-mono">
@@ -678,7 +678,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                   <th className="py-3.5 px-4 font-bold">Timestamp</th>
                   <th className="py-3.5 px-4 font-bold">User Identity</th>
                   <th className="py-3.5 px-4 font-bold">Action Type</th>
-                  <th className="py-3.5 px-4 font-bold">Device & Sensor Info</th>
+                  <th className="py-3.5 px-4 font-bold">Device and Sensor Info</th>
                   <th className="py-3.5 px-4 font-bold">Result (Success/Fail)</th>
                   <th className="py-3.5 px-4 font-bold">Cryptographic Detail</th>
                 </tr>
@@ -766,7 +766,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
         </div>
       )}
 
-      {/* SUB-TAB: PRODUCT SALES PERFORMANCE & TRENDS (RECHARTS) */}
+      {/* SUB-TAB: PRODUCT SALES PERFORMANCE and TRENDS (RECHARTS) */}
       {activeTab === 'sales_analytics' && (
         <div className="space-y-6">
           <ProductSalesAnalytics products={products} />

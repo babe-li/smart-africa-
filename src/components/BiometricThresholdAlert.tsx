@@ -133,7 +133,7 @@ export const BiometricThresholdAlert: React.FC<BiometricThresholdAlertProps> = (
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-rose-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
       )}
 
-      {/* Top Banner & Title */}
+      {/* Top Banner and Title */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800/80 relative z-10">
         <div className="flex items-start space-x-4">
           <div className={`p-3.5 rounded-2xl shrink-0 ${
@@ -216,7 +216,7 @@ export const BiometricThresholdAlert: React.FC<BiometricThresholdAlertProps> = (
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-2 transition-all shadow-lg active:scale-95"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Acknowledge & Reset Alert</span>
+                <span>Acknowledge and Reset Alert</span>
               </button>
             </>
           )}
@@ -232,7 +232,7 @@ export const BiometricThresholdAlert: React.FC<BiometricThresholdAlertProps> = (
         </div>
       )}
 
-      {/* Threshold Status & Configuration Panel */}
+      {/* Threshold Status and Configuration Panel */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5 relative z-10">
         {/* Box 1: Current 1-Hour Failure Count */}
         <div className={`p-5 rounded-2xl border transition-all ${

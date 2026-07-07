@@ -47,13 +47,13 @@ const MainApplication: React.FC = () => {
   };
 
   React.useEffect(() => {
-    if (activeTab === 'admin_portal' && user?.role !== 'admin') {
+    if ((activeTab === 'admin_portal' || activeTab === 'orders') && user?.role !== 'admin') {
       setActiveTab('store');
     }
   }, [activeTab, user]);
 
   const handleTabChange = (newTab: string) => {
-    if (newTab === 'admin_portal' && user?.role !== 'admin') {
+    if ((newTab === 'admin_portal' || newTab === 'orders') && user?.role !== 'admin') {
       return;
     }
     setActiveTab(newTab);
@@ -199,7 +199,7 @@ const MainApplication: React.FC = () => {
       <CheckoutModal
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}
-        onOrderCompleted={() => setActiveTab('orders')}
+        onOrderCompleted={() => setActiveTab(user?.role === 'admin' ? 'orders' : 'store')}
       />
     </div>
   );

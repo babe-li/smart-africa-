@@ -75,7 +75,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         </div>
       </div>
 
-      {/* Category Pills & Sorting Controls */}
+      {/* Category Pills and Sorting Controls */}
       <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         {/* Category Pills */}
         <div className="flex flex-wrap gap-2 overflow-x-auto w-full md:w-auto">
@@ -117,29 +117,6 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             <option value="price_low">Price: Low to High (TSh)</option>
             <option value="price_high">Price: High to Low (TSh)</option>
           </select>
-        </div>
-      </div>
-
-      {/* TAM/UTAUT Trust Score Explainer Header */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
-        <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
-            <ShieldCheck className="w-4 h-4" />
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-white">
-              {swahiliMode ? 'Viashirio vya Uaminifu vya bidhaa (TAM & UTAUT Model)' : 'Individual Product Trust Score Indicators (TAM & UTAUT Model)'}
-            </h4>
-            <p className="text-[10px] text-slate-400 leading-tight">
-              {swahiliMode 
-                ? 'Kila bidhaa huhesabiwa alama /100 kutokana na uhakiki wa muuzaji (UTAUT), historia na nyota za wanunuzi (TAM), na ulinzi wa Escrow.' 
-                : 'Calculated dynamically per product combining UTAUT seller verification status, TAM positive transaction history, and enclave escrow reliability.'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2 shrink-0 self-end sm:self-auto text-[11px] font-bold">
-          <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">98+ Elite A+</span>
-          <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">95+ High A</span>
         </div>
       </div>
 

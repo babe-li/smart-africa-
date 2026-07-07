@@ -120,7 +120,7 @@ export const SecurityHealthIndicators: React.FC = () => {
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center mt-2">
             <Activity className="w-6 h-6 text-cyan-400 mr-2.5 shrink-0" />
-            <span>{swahiliMode ? 'Viashiria vya Afya ya Usalama na Uadilifu' : 'Security Health Indicators & Real-Time System Integrity'}</span>
+            <span>{swahiliMode ? 'Viashiria vya Afya ya Usalama na Uadilifu' : 'Security Health Indicators and Real-Time System Integrity'}</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
             {swahiliMode

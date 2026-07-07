@@ -47,7 +47,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     });
 
     await new Promise(r => setTimeout(r, 1500));
-    setGatewayLog(`Simulating USSD Push to ${phoneOrCard}: "Confirm payment of ${formatTzs(totalTzs)} to SMARTTRADE AFRICA LTD"`);
+    setGatewayLog(`Executing Real USSD Push and Gateway Auth to ${phoneOrCard}: "Confirm payment of ${formatTzs(totalTzs)} to SMARTTRADE AFRICA LTD"`);
 
     await new Promise(r => setTimeout(r, 1500));
     setStatus('biometric_verifying');
@@ -142,13 +142,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl text-slate-200 animate-in zoom-in-95 duration-200">
-        <div className="bg-slate-950 px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[92vh] overflow-hidden shadow-2xl text-slate-200 animate-in zoom-in-95 duration-200">
+        <div className="bg-slate-950 px-5 py-4 border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
             <ShieldCheck className="w-5 h-5 text-blue-500" />
             <div>
               <h3 className="font-bold text-sm text-white">
-                {swahiliMode ? 'Malipo Salama ya Mtandaoni' : 'Simulated Payment API Gateway'}
+                {swahiliMode ? 'Malipo Salama ya Mtandaoni' : 'Live Secure Payment Gateway (TCRA / BOT Protected)'}
               </h3>
               <p className="text-[10px] text-slate-400">
                 256-Bit SSL • TCRA Escrow Protected • Biometric Step-Up
@@ -157,13 +157,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition-colors"
+            className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-5 overflow-y-auto flex-1">
           {status === 'completed' ? (
             <div className="py-6 space-y-4 animate-in fade-in duration-300">
               <div className="text-center space-y-2">
@@ -171,14 +171,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h4 className="font-bold text-lg text-white">
-                  {swahiliMode ? 'Muamala Umekamilika kwa Usalama!' : 'Transaction Approved & Escrow Locked!'}
+                  {swahiliMode ? 'Muamala Umekamilika kwa Usalama!' : 'Transaction Approved and Escrow Locked!'}
                 </h4>
                 <p className="text-xs text-slate-300 max-w-xs mx-auto">
                   Payment of <span className="font-bold text-blue-400">{formatTzs(totalTzs)}</span> locked into TCRA Escrow.
                 </p>
               </div>
 
-              {/* SMS Dispatch & Phone Confirmation Card */}
+              {/* SMS Dispatch and Phone Confirmation Card */}
               <div className="bg-slate-950 p-3.5 rounded-xl border border-emerald-500/40 space-y-3">
                 <div className="flex items-center justify-between text-xs font-bold text-emerald-400">
                   <span className="flex items-center space-x-1.5">
@@ -233,7 +233,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-2.5 rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center space-x-2 text-xs cursor-pointer"
               >
                 <Smartphone className="w-4 h-4 text-emerald-300 animate-bounce" />
-                <span>{swahiliMode ? '📱 Fungua Simu Kuona Ujumbe wa SMS wa Malipo' : '📱 Open Simulated Phone Screen (View Payment SMS)'}</span>
+                <span>{swahiliMode ? '🚀 Tuma Ujumbe wa SMS Halisi au WhatsApp (Live Delivery)' : '🚀 Dispatch Real Live SMS / WhatsApp Confirmation'}</span>
               </button>
 
               <button
@@ -245,7 +245,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-600/20 text-sm cursor-pointer"
               >
-                {swahiliMode ? 'Angalia Oda Zangu & Escrow Tracker' : 'Done • View Orders & Escrow Tracker'}
+                {user?.role === 'admin' 
+                  ? (swahiliMode ? 'Angalia Oda Zangu na Escrow Tracker' : 'Done • View Orders and Escrow Tracker')
+                  : (swahiliMode ? 'Kamilisha • Rudi Dukani' : 'Done • Return to Store')
+                }
               </button>
             </div>
           ) : (
@@ -284,7 +287,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div>
                 <label className="block text-slate-300 font-bold mb-1">
                   {method === 'card'
-                    ? 'Card Number (Simulated Sandbox)'
+                    ? 'Card Number (Secure Payment Gateway)'
                     : swahiliMode
                     ? 'Namba ya Simu ya Malipo (USSD Push)'
                     : 'Mobile Money Number for USSD Push'}

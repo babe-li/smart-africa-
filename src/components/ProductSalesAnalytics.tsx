@@ -115,7 +115,7 @@ export const ProductSalesAnalytics: React.FC<ProductSalesAnalyticsProps> = ({ pr
 
     // Map into performance items
     const baseList = filtered.slice(0, 8).map((p, idx) => {
-      // Assign realistic sales volume based on rating & index
+      // Assign realistic sales volume based on rating and index
       const baseUnits = Math.round((5 - idx * 0.4) * 18 * simulationMultiplier);
       const unitsSold = Math.max(12, baseUnits);
       const totalRev = p.priceTzs * unitsSold;
@@ -226,7 +226,7 @@ export const ProductSalesAnalytics: React.FC<ProductSalesAnalyticsProps> = ({ pr
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      {/* Header & Controls Panel */}
+      {/* Header and Controls Panel */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         
@@ -243,7 +243,7 @@ export const ProductSalesAnalytics: React.FC<ProductSalesAnalyticsProps> = ({ pr
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {swahiliMode ? 'Takwimu za Utendaji wa Mauzo na Mwenendo' : 'Product Sales Performance & Trends Dashboard'}
+              {swahiliMode ? 'Takwimu za Utendaji wa Mauzo na Mwenendo' : 'Product Sales Performance and Trends Dashboard'}
             </h2>
             <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
               {swahiliMode
@@ -408,7 +408,7 @@ export const ProductSalesAnalytics: React.FC<ProductSalesAnalyticsProps> = ({ pr
         </div>
       </div>
 
-      {/* Main Charts Grid: Chronological Trend Area Chart & Category Pie Chart */}
+      {/* Main Charts Grid: Chronological Trend Area Chart and Category Pie Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Sales Trend Over Time */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl lg:col-span-2 flex flex-col justify-between">
@@ -416,7 +416,7 @@ export const ProductSalesAnalytics: React.FC<ProductSalesAnalyticsProps> = ({ pr
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-cyan-400" />
-                <span>{swahiliMode ? 'Mwenendo wa Mauzo kwa Wakati' : 'Revenue Trends & Order Volume Over Time'}</span>
+                <span>{swahiliMode ? 'Mwenendo wa Mauzo kwa Wakati' : 'Revenue Trends and Order Volume Over Time'}</span>
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
                 {swahiliMode ? 'Mauzo ya kipindi cha ' : 'Chronological sales velocity for '} 

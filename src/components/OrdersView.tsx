@@ -4,13 +4,302 @@ import { useAuth } from '../context/AuthContext';
 import { formatTzs } from '../utils/format';
 import { 
   Package, ShieldCheck, CheckCircle2, Clock, Truck, FileText, ArrowUpRight,
-  Award, Sparkles, Activity, TrendingUp, UserCheck, ShieldAlert, Gift, MessageSquare, Phone, Send, Smartphone
+  Award, Sparkles, Activity, TrendingUp, UserCheck, ShieldAlert, Gift, MessageSquare, Phone, Send, Smartphone,
+  MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PaymentSmsModal } from './PaymentSmsModal';
 
+interface OrderTrackingProps {
+  order: any;
+  swahiliMode: boolean;
+  updateOrderStatus: (id: string, status: any) => void;
+  onReleaseEscrow: (id: string) => void;
+}
+
+const OrderTrackingTimeline: React.FC<OrderTrackingProps> = ({
+  order,
+  swahiliMode,
+  updateOrderStatus,
+  onReleaseEscrow
+}) => {
+  const [showLogs, setShowLogs] = React.useState(false);
+  const [isSimulating, setIsSimulating] = React.useState(false);
+
+  // Status mapping to steps: Confirmed=0, Processing=1, Shipped=2, Delivered=3
+  const statusToStep: Record<string, number> = {
+    'Confirmed': 0,
+    'Processing': 1,
+    'Shipped': 2,
+    'Delivered': 3
+  };
+
+  const currentStep = statusToStep[order.status] ?? 0;
+
+  const steps = [
+    { key: 'Confirmed', label: swahiliMode ? 'Mkataba' : 'Escrow Secured', sub: swahiliMode ? 'Malipo Kwenye Escrow' : 'Payment locked', timeOffset: '09:30' },
+    { key: 'Processing', label: swahiliMode ? 'Maandalizi' : 'Processing', sub: swahiliMode ? 'Imefungashwa Vizuri' : 'Packed & Inspected', timeOffset: '11:15' },
+    { key: 'Shipped', label: swahiliMode ? 'Njiani' : 'In Transit', sub: swahiliMode ? 'Inasafirishwa Sasa' : 'Out for delivery', timeOffset: '14:00' },
+    { key: 'Delivered', label: swahiliMode ? 'Imewasilishwa' : 'Delivered', sub: swahiliMode ? 'Mkataba Umekamilika' : 'Funds released', timeOffset: '16:45' }
+  ];
+
+  const getStepPercent = () => {
+    if (currentStep === 0) return 12;
+    if (currentStep === 1) return 40;
+    if (currentStep === 2) return 72;
+    return 100;
+  };
+
+  const sellerName = order.items[0]?.product?.seller?.name || 'SmartTrade Merchant';
+  const sellerLocation = order.items[0]?.product?.seller?.location || 'Dar es Salaam';
+
+  const handleNextSimulationStep = () => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsSimulating(false);
+      if (currentStep === 0) {
+        updateOrderStatus(order.id, 'Processing');
+      } else if (currentStep === 1) {
+        updateOrderStatus(order.id, 'Shipped');
+      } else if (currentStep === 2) {
+        onReleaseEscrow(order.id);
+      }
+    }, 1000);
+  };
+
+  const getLogs = () => {
+    const list = [
+      { time: `${order.orderDate} 09:30 EAT`, text: swahiliMode ? 'Oda imepokelewa na kusajiliwa kwenye mfumo.' : 'Order successfully registered on SmartTrade secure node.' },
+      { time: `${order.orderDate} 09:32 EAT`, text: swahiliMode ? 'Malipo yamehakikiwa na kulindwa kwenye akaunti ya Escrow.' : `M-Pesa Escrow funds locked. Escrow Protection Code ${order.escrowProtectionCode} activated under TCRA guidelines.` },
+    ];
+
+    if (currentStep >= 1) {
+      list.push({
+        time: `${order.orderDate} 11:15 EAT`,
+        text: swahiliMode 
+          ? `Muuzaji (${sellerName}) amethibitisha na kufungasha bidhaa huko ${sellerLocation}.` 
+          : `Merchant (${sellerName}) has inspected, packed, and attached secure anti-tamper barcode seals in ${sellerLocation}.`
+      });
+    }
+
+    if (currentStep >= 2) {
+      list.push({
+        time: `${order.orderDate} 14:00 EAT`,
+        text: swahiliMode
+          ? 'Mzigo umekabidhiwa kwa dereva wa SmartTrade na kuanza safari ya uwandani.'
+          : 'Package dispatched. Handed over to smartDelivery Express Rider: Juma Hamisi (Vespa TZ-908, +255 764 921 002).'
+      });
+      list.push({
+        time: `${order.orderDate} 15:30 EAT`,
+        text: swahiliMode
+          ? 'Mzigo umepita kituo cha ukaguzi cha kati na kuelekea anwani ya mteja.'
+          : `Shipment arrived at Regional Transit Enclave. Dispatched toward delivery point at: ${order.shippingAddress}.`
+      });
+    }
+
+    if (currentStep >= 3) {
+      list.push({
+        time: `${order.orderDate} 16:45 EAT`,
+        text: swahiliMode
+          ? 'Mteja amethibitisha kupokea bidhaa. Fedha za Escrow zimeachiwa kwenda kwa muuzaji.'
+          : 'Delivery verification completed. Cryptographic signature approved. Escrow release executed successfully.'
+      });
+    }
+
+    return list.reverse();
+  };
+
+  return (
+    <div className="bg-slate-950/60 rounded-xl border border-slate-800 p-5 mt-4 space-y-5">
+      {/* Tracker Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Truck className="w-4 h-4 text-blue-400 shrink-0" />
+          <span className="font-bold text-xs text-slate-200">
+            {swahiliMode ? 'Mfuatiliaji wa Usafirishaji wa Wakati Halisi' : 'Real-Time smartDelivery Status'}
+          </span>
+          {currentStep === 2 && (
+            <span className="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-500/30 animate-pulse">
+              {swahiliMode ? 'Katika Usafirishaji' : 'Live Transit'}
+            </span>
+          )}
+        </div>
+
+        {/* Demo simulator controls */}
+        <div className="flex items-center space-x-2">
+          {currentStep < 3 ? (
+            <button
+              onClick={handleNextSimulationStep}
+              disabled={isSimulating}
+              className="px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-blue-500/15 hover:bg-blue-500/35 text-blue-300 border border-blue-500/30 transition-all cursor-pointer flex items-center space-x-1"
+              title="Advance shipment stages to test dynamic telemetry"
+            >
+              {isSimulating ? (
+                <>
+                  <span className="w-2.5 h-2.5 border-2 border-blue-300 border-t-transparent rounded-full animate-spin"></span>
+                  <span>Simulating...</span>
+                </>
+              ) : (
+                <>
+                  <span>⚡</span>
+                  <span>
+                    {currentStep === 0 && (swahiliMode ? 'Anza Maandalizi' : 'Simulate Processing')}
+                    {currentStep === 1 && (swahiliMode ? 'Anza Kusafirisha' : 'Simulate Shipment')}
+                    {currentStep === 2 && (swahiliMode ? 'Kamilisha Uwasilishaji' : 'Simulate Delivery')}
+                  </span>
+                </>
+              )}
+            </button>
+          ) : (
+            <span className="bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold px-2.5 py-1 rounded-md flex items-center space-x-1">
+              <span>✓</span>
+              <span>{swahiliMode ? 'Imekamilika' : 'Escrow Released'}</span>
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Progress Timeline Stepper */}
+      <div className="relative pt-2 pb-4">
+        {/* Progress Background track line */}
+        <div className="absolute top-[34px] left-8 right-8 h-1 bg-slate-800 rounded-full" />
+        
+        {/* Active glowing progress track line */}
+        <div 
+          className="absolute top-[34px] left-8 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(59,130,246,0.5)]" 
+          style={{ width: `calc(${getStepPercent()}% - 32px)` }}
+        />
+
+        {/* Timeline Steps Grid */}
+        <div className="grid grid-cols-4 relative z-10 text-center">
+          {steps.map((s, index) => {
+            const isCompleted = currentStep >= index;
+            const isActive = currentStep === index;
+            
+            let StepIcon = Package;
+            if (index === 0) StepIcon = ShieldCheck;
+            if (index === 1) StepIcon = Package;
+            if (index === 2) StepIcon = Truck;
+            if (index === 3) StepIcon = CheckCircle2;
+
+            return (
+              <div key={s.key} className="flex flex-col items-center">
+                <div 
+                  className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-slate-900 border-blue-400 text-blue-400 shadow-[0_0_12px_rgba(96,165,250,0.4)] scale-110' 
+                      : isCompleted 
+                        ? 'bg-slate-900 border-emerald-400 text-emerald-400' 
+                        : 'bg-slate-950 border-slate-800 text-slate-500'
+                  }`}
+                >
+                  <StepIcon className="w-4 h-4" />
+                </div>
+                <span className={`text-[10px] font-bold mt-2 ${isActive ? 'text-blue-300' : isCompleted ? 'text-slate-300' : 'text-slate-500'}`}>
+                  {s.label}
+                </span>
+                <span className="text-[8px] text-slate-500 hidden sm:block max-w-[100px] mt-0.5 leading-tight">
+                  {s.sub}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Transit Map / Live Route Simulation */}
+      {currentStep === 2 && (
+        <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl flex flex-col md:flex-row items-stretch gap-4">
+          <div className="flex-1 space-y-2">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-400 font-bold uppercase tracking-wider">{swahiliMode ? 'Dereva wako' : 'smartDelivery Rider'}</span>
+              <span className="text-blue-400 font-bold">ETA: 28 Mins</span>
+            </div>
+            
+            <div className="flex items-center space-x-3 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+              <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xs font-bold">
+                JH
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white">Juma Hamisi</p>
+                <p className="text-[10px] text-slate-400">Vespa EV Boxer • TZ-908</p>
+              </div>
+              <a 
+                href="tel:+255764921002"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-colors"
+                title="Call Courier"
+              >
+                <Phone className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          <div className="flex-1 bg-slate-950/60 p-3 rounded-lg border border-slate-800 flex flex-col justify-between">
+            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">
+              {swahiliMode ? 'Njia ya Usafirishaji' : 'Route Landmark Progression'}
+            </div>
+            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 relative">
+              <div className="absolute top-1.5 left-2 right-2 h-0.5 bg-slate-800 z-0" />
+              
+              <div className="flex flex-col items-start relative z-10">
+                <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-900" />
+                <span className="mt-1 font-bold text-emerald-400">Merchant</span>
+              </div>
+              
+              <div className="flex flex-col items-center relative z-10">
+                <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-900" />
+                <span className="mt-1 text-emerald-400">Mwenge</span>
+              </div>
+
+              <div className="flex flex-col items-center relative z-10">
+                <span className="w-3.5 h-3.5 rounded-full bg-blue-500 border-2 border-slate-900 animate-pulse" />
+                <span className="mt-1 font-bold text-blue-300">Transit Node</span>
+              </div>
+
+              <div className="flex flex-col items-end relative z-10">
+                <span className="w-3 h-3 rounded-full bg-slate-800 border-2 border-slate-900" />
+                <span className="mt-1 text-slate-500">{swahiliMode ? 'Nyumbani' : 'Home'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Expandable Shipment Audit Log */}
+      <div className="border-t border-slate-800 pt-3">
+        <button 
+          onClick={() => setShowLogs(!showLogs)}
+          className="flex items-center justify-between w-full text-xs text-slate-400 hover:text-white transition-colors py-1 cursor-pointer font-bold"
+        >
+          <span className="flex items-center">
+            <Clock className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
+            {swahiliMode ? 'Kumbukumbu za Usafirishaji' : 'Detailed Delivery Telemetry Logs'}
+          </span>
+          <span className="text-[10px] font-mono text-slate-500">
+            {showLogs ? (swahiliMode ? 'Funga ▲' : 'Collapse ▲') : (swahiliMode ? 'Fungua ▼' : 'Expand ▼')}
+          </span>
+        </button>
+
+        {showLogs && (
+          <div className="mt-3.5 space-y-2.5 max-h-48 overflow-y-auto pr-1">
+            {getLogs().map((log, lIdx) => (
+              <div key={lIdx} className="flex items-start text-[11px] font-mono leading-relaxed group">
+                <span className="text-slate-500 shrink-0 w-32 select-none">{log.time}</span>
+                <span className="text-slate-400 border-l border-slate-800 pl-3.5 relative py-0.5">
+                  <span className="absolute -left-1 top-2 w-2 h-2 rounded-full bg-blue-500/40 group-first:bg-blue-400" />
+                  {log.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const OrdersView: React.FC = () => {
-  const { orders } = useCart();
+  const { orders, updateOrderStatus } = useCart();
   const { user, biometricStatus, swahiliMode, addSecurityLog } = useAuth();
   const [smsPhones, setSmsPhones] = React.useState<Record<string, string>>({});
   const [smsSentStatus, setSmsSentStatus] = React.useState<Record<string, string>>({});
@@ -18,6 +307,7 @@ export const OrdersView: React.FC = () => {
 
   const handleReleaseEscrow = (orderId: string) => {
     confetti({ particleCount: 80, spread: 60 });
+    updateOrderStatus(orderId, 'Delivered');
     addSecurityLog({
       type: 'TCP_ATTESTATION',
       status: 'PASSED',
@@ -76,9 +366,6 @@ export const OrdersView: React.FC = () => {
           <h1 className="text-2xl font-bold text-white">
             {swahiliMode ? 'Oda Zangu and Risiti za Kielektroniki' : 'Escrow Orders and Cryptographic Receipts'}
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            All purchases are backed by SmartTrade 100% Escrow Protection Guarantee supervised by TCRA guidelines.
-          </p>
         </div>
         <div className="hidden sm:flex bg-blue-500/10 text-blue-400 p-3 rounded-xl border border-blue-500/20 items-center">
           <ShieldCheck className="w-6 h-6 mr-2" />
@@ -86,7 +373,7 @@ export const OrdersView: React.FC = () => {
         </div>
       </div>
 
-      {/* User Profile & Loyalty Points Display */}
+      {/* User Profile and Loyalty Points Display */}
       <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -149,7 +436,7 @@ export const OrdersView: React.FC = () => {
             <p className="text-[10px] text-slate-500 leading-relaxed">
               {swahiliMode
                 ? 'Unapata Pointi 1 ya Uaminifu kwa kila TSh 100 unazotumia kulipia oda zilizohakikiwa na Escrow.'
-                : 'Earn 1 SmartTrade Loyalty Point per 100 TZS purchase total. Redeemable for escrow fee waivers & priority shipping.'}
+                : 'Earn 1 SmartTrade Loyalty Point per 100 TZS purchase total. Redeemable for escrow fee waivers and priority shipping.'}
             </p>
           </div>
         </div>
@@ -188,7 +475,7 @@ export const OrdersView: React.FC = () => {
                     return (
                       <span 
                         className={`px-2.5 py-1 rounded font-mono font-bold text-[10px] flex items-center border shadow-sm ${risk.color}`} 
-                        title="Mock Fraud Risk score calculated from WebAuthn verification status & browser TPM telemetry"
+                        title="Mock Fraud Risk score calculated from WebAuthn verification status and browser TPM telemetry"
                       >
                         <Activity className="w-3 h-3 mr-1" />
                         Fraud Risk: {risk.score}% ({risk.level})
@@ -228,6 +515,16 @@ export const OrdersView: React.FC = () => {
                 ))}
               </div>
 
+              {/* Real-Time Order Tracking and Shipment Telemetry */}
+              <div className="px-6 pb-6">
+                <OrderTrackingTimeline 
+                  order={order} 
+                  swahiliMode={swahiliMode} 
+                  updateOrderStatus={updateOrderStatus} 
+                  onReleaseEscrow={handleReleaseEscrow} 
+                />
+              </div>
+
               {/* Send Product Buying Confirmation SMS Box */}
               <div className="bg-slate-900/90 px-6 py-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-sans text-xs">
                 <div className="flex items-center space-x-2 text-slate-300">
@@ -237,7 +534,7 @@ export const OrdersView: React.FC = () => {
                       {swahiliMode ? 'Tuma Ujumbe wa SMS Thabitishi' : 'Send Product Buying Confirmation SMS'}
                     </p>
                     <p className="text-[10px] text-slate-400 leading-tight">
-                      {swahiliMode ? 'Tuma risiti au thibitisho la ununuzi kwenda kwenye simu ya mkononi.' : 'Dispatch instant SMS/WhatsApp delivery & escrow receipt to mobile number.'}
+                      {swahiliMode ? 'Tuma risiti au thibitisho la ununuzi kwenda kwenye simu ya mkononi.' : 'Dispatch instant SMS/WhatsApp delivery and escrow receipt to mobile number.'}
                     </p>
                   </div>
                 </div>
@@ -251,19 +548,12 @@ export const OrdersView: React.FC = () => {
                     className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 font-mono text-xs text-white outline-none focus:border-emerald-500 transition-colors w-36 sm:w-40"
                   />
                   <button
-                    onClick={() => handleSendOrderSms(order)}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition-colors shadow shrink-0 cursor-pointer"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>{swahiliMode ? 'Tuma SMS' : 'Send SMS'}</span>
-                  </button>
-                  <button
                     onClick={() => setActiveSmsOrder(order)}
-                    className="bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold px-2.5 py-1.5 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1 transition-colors shrink-0 cursor-pointer"
-                    title="View Simulated Mobile Inbox"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 transition-colors shadow shrink-0 cursor-pointer"
+                    title="Launch Live SMS and WhatsApp Gateway Hub"
                   >
                     <Smartphone className="w-3.5 h-3.5" />
-                    <span>{swahiliMode ? 'Angalia SMS' : 'View SMS Inbox'}</span>
+                    <span>{swahiliMode ? '🚀 Tuma SMS Halisi / WhatsApp' : '🚀 Send Live SMS / WhatsApp'}</span>
                   </button>
                 </div>
               </div>
@@ -278,7 +568,7 @@ export const OrdersView: React.FC = () => {
                 </div>
               )}
 
-              {/* Security Receipt & Escrow Footer */}
+              {/* Security Receipt and Escrow Footer */}
               <div className="bg-slate-950 text-white px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs font-mono border-t border-slate-800">
                 <div>
                   <div className="flex items-center space-x-2 text-green-400 font-bold">

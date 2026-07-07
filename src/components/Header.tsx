@@ -129,7 +129,7 @@ export const Header: React.FC<HeaderProps> = ({
           {user ? (
             <div className="flex items-center space-x-3">
               <div 
-                onClick={() => setActiveTab('orders')}
+                onClick={() => setActiveTab(user?.role === 'admin' ? 'orders' : 'store')}
                 className="cursor-pointer hover:bg-slate-800 px-2.5 py-1 rounded-lg text-left transition-colors group"
               >
                 <div className="flex items-center space-x-1.5">
@@ -143,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
                 <p className="text-xs font-bold flex items-center text-white mt-0.5 group-hover:text-blue-300 transition-colors">
                   <UserCheck className="w-3.5 h-3.5 mr-1.5 text-blue-500" />
-                  {swahiliMode ? 'Akaunti & Tuzo' : 'Profile & Rewards'}
+                  {swahiliMode ? 'Akaunti na Tuzo' : 'Profile and Rewards'}
                 </p>
               </div>
               <button 
@@ -220,14 +220,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           🏷️ {swahiliMode ? 'Duka Kuu (Featured Deals)' : 'Featured Deals'}
         </button>
-        <button
-          onClick={() => setActiveTab('orders')}
-          className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
-            activeTab === 'orders' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
-          }`}
-        >
-          📦 {swahiliMode ? 'Oda na Risiti zangu' : 'Escrow Orders and Receipts'}
-        </button>
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
+              activeTab === 'orders' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
+            }`}
+          >
+            📦 {swahiliMode ? 'Oda na Risiti zangu' : 'Escrow Orders and Receipts'}
+          </button>
+        )}
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('admin_portal')}
@@ -237,7 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-slate-300 hover:text-white bg-slate-800/60 px-3 py-1 rounded-lg border border-slate-700/60'
             }`}
           >
-            👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave & Telemetry'}
+            👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave and Telemetry'}
           </button>
         )}
         <span className="text-slate-800 hidden md:inline">|</span>

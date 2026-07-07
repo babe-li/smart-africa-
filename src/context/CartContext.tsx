@@ -15,6 +15,7 @@ interface CartContextType {
   setEscrowEnabled: (val: boolean) => void;
   orders: Order[];
   addOrder: (order: Order) => void;
+  updateOrderStatus: (orderId: string, status: Order['status']) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -123,6 +124,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setOrders(prev => [order, ...prev]);
   };
 
+  const updateOrderStatus = (orderId: string, status: Order['status']) => {
+    setOrders(prev => prev.map(order => 
+      order.id === orderId ? { ...order, status } : order
+    ));
+  };
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotalTzs = cart.reduce((sum, item) => sum + (item.product.priceTzs * item.quantity), 0);
   const shippingFeeTzs = subtotalTzs > 500000 ? 0 : (subtotalTzs === 0 ? 0 : 15000); // Free shipping over 500k TSh
@@ -142,7 +149,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       escrowEnabled,
       setEscrowEnabled,
       orders,
-      addOrder
+      addOrder,
+      updateOrderStatus
     }}>
       {children}
     </CartContext.Provider>

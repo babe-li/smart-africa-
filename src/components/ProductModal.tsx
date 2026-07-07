@@ -43,7 +43,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column: Image & Trust Badges */}
+          {/* Left Column: Image and Trust Badges */}
           <div className="space-y-4">
             <div className="rounded-xl overflow-hidden bg-slate-950 border border-slate-800 aspect-square">
               <img
@@ -59,7 +59,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-1.5 text-blue-300 font-bold">
                   <Award className="w-4 h-4 text-blue-400" />
-                  <span>{swahiliMode ? 'Tathmini ya TAM & UTAUT' : 'TAM/UTAUT Product Trust Model'}</span>
+                  <span>{swahiliMode ? 'Tathmini ya TAM na UTAUT' : 'TAM/UTAUT Product Trust Model'}</span>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${trustBreakdown.badgeBg} ${trustBreakdown.textColor} ${trustBreakdown.borderColor}`}>
                   {trustBreakdown.totalScore}/100 Score
@@ -88,7 +88,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   <span className="font-mono font-bold text-emerald-400">{trustBreakdown.factors.transactionHistory.score}/{trustBreakdown.factors.transactionHistory.max} pts</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">• UTAUT Escrow & Effort:</span>
+                  <span className="text-slate-400">• UTAUT Escrow and Effort:</span>
                   <span className="font-mono font-bold text-amber-400">{trustBreakdown.factors.escrowAndDelivery.score}/{trustBreakdown.factors.escrowAndDelivery.max} pts</span>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </p>
               </div>
 
-              {/* Description & Features */}
+              {/* Description and Features */}
               <div className="mt-4">
                 <h4 className="font-bold text-xs text-slate-300 uppercase tracking-wider mb-1">
                   {swahiliMode ? 'Maelezo ya bidhaa' : 'Product Overview'}
