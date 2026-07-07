@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider, useCart } from './context/CartContext';
 import { PRODUCTS } from './data/products';
@@ -92,32 +93,60 @@ const MainApplication: React.FC = () => {
       />
 
       {/* Main Container wrapper supporting responsive layout across all devices */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-6 pb-24">
-        {activeTab === 'store' && (
-          <StorefrontView
-            products={searchedProducts}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={(cat) => {
-              setSelectedCategory(cat);
-              logUserMovement('SEARCH', `Filtered store category: ${cat}`);
-            }}
-            onSelectProduct={(p) => {
-              setSelectedProduct(p);
-              logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
-            }}
-            onAddToCart={(p) => {
-              addToCart(p, 1);
-              logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
-            }}
-          />
-        )}
-        {activeTab === 'orders' && <OrdersView />}
-        {activeTab === 'admin_portal' && (
-          <AdminPortalView
-            products={products}
-            onAddProduct={handleAddProduct}
-          />
-        )}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-6 pb-24 overflow-x-hidden">
+        <AnimatePresence mode="wait">
+          {activeTab === 'store' && (
+            <motion.div
+              key="store"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <StorefrontView
+                products={searchedProducts}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={(cat) => {
+                  setSelectedCategory(cat);
+                  logUserMovement('SEARCH', `Filtered store category: ${cat}`);
+                }}
+                onSelectProduct={(p) => {
+                  setSelectedProduct(p);
+                  logUserMovement('PAGE_VIEW', `Inspected product details: ${p.name}`);
+                }}
+                onAddToCart={(p) => {
+                  addToCart(p, 1);
+                  logUserMovement('ADD_TO_CART', `Added product to cart: ${p.name}`);
+                }}
+              />
+            </motion.div>
+          )}
+          {activeTab === 'orders' && (
+            <motion.div
+              key="orders"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <OrdersView />
+            </motion.div>
+          )}
+          {activeTab === 'admin_portal' && (
+            <motion.div
+              key="admin_portal"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <AdminPortalView
+                products={products}
+                onAddProduct={handleAddProduct}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Mobile Bottom Navigation App Bar */}
