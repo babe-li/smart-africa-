@@ -5,10 +5,11 @@ import { formatTzs } from '../utils/format';
 import { 
   Package, ShieldCheck, CheckCircle2, Clock, Truck, FileText, ArrowUpRight,
   Award, Sparkles, Activity, TrendingUp, UserCheck, ShieldAlert, Gift, MessageSquare, Phone, Send, Smartphone,
-  MapPin
+  MapPin, Mail, Loader2, XCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PaymentSmsModal } from './PaymentSmsModal';
+import { googleSignIn, getGmailAccessToken, sendGmailEmail } from '../utils/gmail';
 
 interface OrderTrackingProps {
   order: any;
@@ -305,6 +306,86 @@ export const OrdersView: React.FC = () => {
   const [smsSentStatus, setSmsSentStatus] = React.useState<Record<string, string>>({});
   const [activeSmsOrder, setActiveSmsOrder] = React.useState<any | null>(null);
 
+  // Gmail states
+  const [emailRecipients, setEmailRecipients] = React.useState<Record<string, string>>({});
+  const [emailSentStatus, setEmailSentStatus] = React.useState<Record<string, string>>({});
+  const [emailLoading, setEmailLoading] = React.useState<Record<string, boolean>>({});
+  const [emailError, setEmailError] = React.useState<Record<string, string>>({});
+
+  const handleSendGmailReceipt = async (order: any) => {
+    const targetEmail = emailRecipients[order.id] || user?.email || 'buyer@gmail.com';
+    
+    setEmailLoading(prev => ({ ...prev, [order.id]: true }));
+    setEmailError(prev => ({ ...prev, [order.id]: '' }));
+    setEmailSentStatus(prev => ({ ...prev, [order.id]: '' }));
+
+    try {
+      let token = getGmailAccessToken();
+      if (!token) {
+        // Prompt Google Sign In
+        const loginRes = await googleSignIn();
+        if (!loginRes) {
+          throw new Error('Google Sign-In canceled or failed');
+        }
+        token = loginRes.accessToken;
+      }
+
+      const orderItemsListHtml = order.items.map((item: any) => 
+        `<li><strong>${item.product.name}</strong> - Qty: ${item.quantity} × TSh ${item.product.priceTzs.toLocaleString()}</li>`
+      ).join('');
+
+      const subject = `SmartTrade Africa - Secure Escrow Invoice #${order.id}`;
+      const htmlBody = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #0b1329; color: #ffffff; border-radius: 12px; border: 1px solid #1e293b;">
+          <h2 style="color: #60a5fa; border-bottom: 1px solid #1e293b; padding-bottom: 10px;">🔒 SmartTrade Escrow Ledger Receipt</h2>
+          <p>Dear <strong>${user?.name || 'Customer'}</strong>,</p>
+          <p>Your transaction has been securely processed and recorded on the SmartTrade decentralized escrow network under TCRA trust guidelines.</p>
+          
+          <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #1e293b; margin: 20px 0;">
+            <p style="margin: 0; font-size: 14px;"><strong>Order Reference:</strong> #${order.id}</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Escrow Protection Code:</strong> ${order.escrowProtectionCode}</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Total Paid:</strong> TSh ${order.totalTzs?.toLocaleString()}</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Payment Reference:</strong> ${order.paymentTransaction?.cryptoSignature}</p>
+          </div>
+
+          <h3 style="color: #60a5fa;">Purchased Itemized Inventory:</h3>
+          <ul style="padding-left: 20px; font-size: 14px; line-height: 1.6;">
+            ${orderItemsListHtml}
+          </ul>
+
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin-top: 25px; border-top: 1px solid #1e293b; padding-top: 15px;">
+            Your funds are locked safely in escrow. They will only be transferred to the seller once you physically receive and verify your products. Keep your Escrow Protection Code secure.
+          </p>
+          <p style="font-size: 12px; color: #64748b; text-align: center; margin-top: 20px;">
+            © SmartTrade Tanzania • Dar es Salaam, TZ
+          </p>
+        </div>
+      `;
+
+      await sendGmailEmail(targetEmail, subject, htmlBody);
+
+      addSecurityLog({
+        type: 'EMAIL_DISPATCH',
+        status: 'PASSED',
+        detail: `Gmail receipt successfully dispatched to ${targetEmail} for Order #${order.id}.`,
+        payloadSnippet: `GMAIL_SMTP_SUCCESS: DELIVERED`
+      });
+
+      setEmailSentStatus(prev => ({
+        ...prev,
+        [order.id]: swahiliMode ? `Risiti imetumwa kwa barua pepe ya ${targetEmail}!` : `Invoice sent successfully to ${targetEmail}!`
+      }));
+    } catch (err: any) {
+      console.error('Failed to dispatch Gmail invoice:', err);
+      setEmailError(prev => ({
+        ...prev,
+        [order.id]: err.message || 'Failed to dispatch email'
+      }));
+    } finally {
+      setEmailLoading(prev => ({ ...prev, [order.id]: false }));
+    }
+  };
+
   const handleReleaseEscrow = (orderId: string) => {
     confetti({ particleCount: 80, spread: 60 });
     updateOrderStatus(orderId, 'Delivered');
@@ -565,6 +646,69 @@ export const OrdersView: React.FC = () => {
                     {smsSentStatus[order.id]}
                   </span>
                   <span className="text-[10px] text-emerald-400/80">TCRA Gateway • Verified</span>
+                </div>
+              )}
+
+              {/* Send Email Receipt Box */}
+              <div className="bg-slate-900/90 px-6 py-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-sans text-xs">
+                <div className="flex items-center space-x-2 text-slate-300">
+                  <Mail className="w-4 h-4 text-rose-400 shrink-0" />
+                  <div>
+                    <p className="font-bold text-white">
+                      {swahiliMode ? 'Tuma Risiti ya Kielektroniki kwa Gmail' : 'Send Electronic Receipt via Gmail'}
+                    </p>
+                    <p className="text-[10px] text-slate-400 leading-tight">
+                      {swahiliMode ? 'Tuma mkataba na risti rasmi ya ununuzi moja kwa moja kwa barua pepe.' : 'Dispatch official escrow ledger confirmation and invoice to buyer\'s email address.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="email"
+                    value={emailRecipients[order.id] !== undefined ? emailRecipients[order.id] : (user?.email || 'buyer@gmail.com')}
+                    onChange={(e) => setEmailRecipients(prev => ({ ...prev, [order.id]: e.target.value }))}
+                    placeholder="buyer@gmail.com"
+                    className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 font-mono text-xs text-white outline-none focus:border-rose-500 transition-colors w-36 sm:w-40"
+                  />
+                  <button
+                    onClick={() => handleSendGmailReceipt(order)}
+                    disabled={emailLoading[order.id]}
+                    className="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 transition-colors shadow shrink-0 cursor-pointer disabled:bg-rose-800 disabled:cursor-not-allowed"
+                    title="Transmit invoice using secure Gmail API"
+                  >
+                    {emailLoading[order.id] ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>{swahiliMode ? '📧 Tuma Risiti' : '📧 Send Gmail Invoice'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {emailSentStatus[order.id] && (
+                <div className="bg-rose-950/60 border-t border-rose-500/30 px-6 py-2 text-[11px] text-rose-300 font-mono flex items-center justify-between animate-in fade-in">
+                  <span className="flex items-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-rose-400 shrink-0" />
+                    {emailSentStatus[order.id]}
+                  </span>
+                  <span className="text-[10px] text-rose-400/80">Google Workspace • Attested</span>
+                </div>
+              )}
+
+              {emailError[order.id] && (
+                <div className="bg-rose-950/40 border-t border-rose-500/20 px-6 py-2 text-[11px] text-rose-400 font-mono flex items-center justify-between animate-in fade-in">
+                  <span className="flex items-center">
+                    <XCircle className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                    {emailError[order.id]}
+                  </span>
+                  <span className="text-[10px] text-rose-500/80">API Error</span>
                 </div>
               )}
 

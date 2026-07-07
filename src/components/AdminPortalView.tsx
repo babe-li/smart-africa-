@@ -34,8 +34,25 @@ import {
   Clock,
   Smartphone,
   Monitor,
-  Terminal
+  Terminal,
+  Mail,
+  Send,
+  Inbox,
+  LogOut,
+  Check,
+  Loader2
 } from 'lucide-react';
+import { 
+  googleSignIn, 
+  googleSignOut, 
+  getGmailAccessToken, 
+  sendGmailEmail, 
+  listGmailMessages, 
+  parseGmailMessage, 
+  initGmailAuth,
+  setGmailAccessToken
+} from '../utils/gmail';
+import { User as FirebaseUser } from 'firebase/auth';
 
 interface AdminPortalViewProps {
   products: Product[];
@@ -52,7 +69,148 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({
 }) => {
   const { user, adminList, addAdminAccount, userMovements, swahiliMode, biometricAttemptLogs } = useAuth();
   const { cart, totalItems, subtotalTzs, orders } = useCart();
-  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'sales_analytics' | 'add_product' | 'add_admin' | 'security_health'>('movements');
+  const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'sales_analytics' | 'add_product' | 'add_admin' | 'security_health' | 'gmail_hub'>('movements');
+
+  // Gmail State variables
+  const [gmailUser, setGmailUser] = useState<FirebaseUser | null>(null);
+  const [gmailToken, setGmailToken] = useState<string | null>(null);
+  const [gmailIsLoading, setGmailIsLoading] = useState<boolean>(true);
+  const [gmailRecipient, setGmailRecipient] = useState<string>('myovelababeli@gmail.com');
+  const [gmailSubject, setGmailSubject] = useState<string>('SmartTrade Africa Notification');
+  const [gmailBody, setGmailBody] = useState<string>(`<h3>SmartTrade Tanzania - Order Receipt</h3>
+<p>Habari,</p>
+<p>Oda yako imehakikiwa na kulindwa kwa Escrow chini ya mwongozo wa TCRA na Benki Kuu ya Tanzania.</p>
+<p>Asante kwa kufanya biashara nasi!</p>`);
+  const [gmailMessages, setGmailMessages] = useState<any[]>([]);
+  const [gmailSelectedMsg, setGmailSelectedMsg] = useState<any | null>(null);
+  const [gmailIsSending, setGmailIsSending] = useState<boolean>(false);
+  const [gmailIsFetching, setGmailIsFetching] = useState<boolean>(false);
+  const [gmailSendSuccess, setGmailSendSuccess] = useState<boolean>(false);
+  const [gmailSendError, setGmailSendError] = useState<string | null>(null);
+  const [gmailFetchError, setGmailFetchError] = useState<string | null>(null);
+
+  // Initialize Gmail authorization state listener
+  React.useEffect(() => {
+    const unsubscribe = initGmailAuth(
+      (user, token) => {
+        setGmailUser(user);
+        setGmailToken(token);
+        setGmailIsLoading(false);
+      },
+      () => {
+        setGmailUser(null);
+        setGmailToken(null);
+        setGmailIsLoading(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  const handleGmailLogin = async () => {
+    try {
+      setGmailIsLoading(true);
+      const res = await googleSignIn();
+      if (res) {
+        setGmailUser(res.user);
+        setGmailToken(res.accessToken);
+      }
+    } catch (err: any) {
+      console.error('Failed to authenticate with Google Gmail:', err);
+    } finally {
+      setGmailIsLoading(false);
+    }
+  };
+
+  const handleGmailLogout = async () => {
+    try {
+      await googleSignOut();
+      setGmailUser(null);
+      setGmailToken(null);
+      setGmailMessages([]);
+      setGmailSelectedMsg(null);
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
+  const handleFetchEmails = async () => {
+    if (!getGmailAccessToken()) return;
+    setGmailIsFetching(true);
+    setGmailFetchError(null);
+    try {
+      const msgs = await listGmailMessages('subject:(SmartTrade OR Oda OR Receipt OR Payment OR Escrow OR Invoice)');
+      const parsed = msgs.map(msg => parseGmailMessage(msg)).filter(Boolean);
+      setGmailMessages(parsed);
+    } catch (err: any) {
+      console.error('Failed to list Gmail messages:', err);
+      setGmailFetchError(err.message || 'Failed to sync emails');
+    } finally {
+      setGmailIsFetching(false);
+    }
+  };
+
+  // Automatically fetch emails when token is acquired or when tab is activated
+  React.useEffect(() => {
+    if (activeTab === 'gmail_hub' && gmailToken) {
+      handleFetchEmails();
+    }
+  }, [activeTab, gmailToken]);
+
+  const EMAIL_TEMPLATES = [
+    {
+      name: 'Escrow Secured (EN)',
+      subject: 'SmartTrade Africa - Escrow Funds Locked Successfully',
+      body: `<h3>🔒 SmartTrade Tanzania Escrow Confirmation</h3>
+<p>Hello,</p>
+<p>Your payment has been successfully verified and locked in our TCRA-authorized Escrow ledger.</p>
+<p><strong>Order ID:</strong> #ST-90372<br>
+<strong>Escrow Protection Code:</strong> ST-MPESA-SECURE</p>
+<p>The merchant has been notified to begin package preparation immediately. Funds will only be released to the merchant once you physically receive and verify the item.</p>
+<p>Thank you for trading securely,<br>SmartTrade Team</p>`
+    },
+    {
+      name: 'Escrow Secured (SW)',
+      subject: 'SmartTrade Africa - Malipo ya Escrow Yamethibitishwa',
+      body: `<h3>🔒 Uthibitisho wa Malipo ya Escrow - SmartTrade</h3>
+<p>Habari,</p>
+<p>Malipo yako yamehakikiwa na kuhifadhiwa salama kwenye mfumo wetu wa Escrow chini ya mwongozo wa TCRA.</p>
+<p><strong>Namba ya Oda:</strong> #ST-90372<br>
+<strong>Namba ya Uthibitisho:</strong> ST-MPESA-SECURE</p>
+<p>Muuzaji amearifiwa kuanza kuandaa mzigo wako sasa. Fedha zitatumwa kwa muuzaji tu baada ya wewe kupokea na kukagua bidhaa yako.</p>
+<p>Asante kwa kutumia SmartTrade,<br>Timu ya SmartTrade</p>`
+    },
+    {
+      name: 'Package in Transit (EN)',
+      subject: 'SmartTrade Africa - Your Order is Out for Delivery',
+      body: `<h3>🚚 Your Package is Out for Delivery!</h3>
+<p>Hi there,</p>
+<p>Your SmartTrade order has been handed over to our verified smartDelivery courier and is currently in transit to your shipping address.</p>
+<p><strong>Rider Name:</strong> Juma Hamisi (+255 764 921 002)<br>
+<strong>Vehicle:</strong> Vespa EV Boxer (TZ-908)</p>
+<p>Please have your Escrow Protection Code ready to complete the cryptographic handoff upon physical delivery.</p>
+<p>Best regards,<br>smartDelivery Logistics</p>`
+    }
+  ];
+
+  const handleSendCustomEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!gmailRecipient || !gmailSubject || !gmailBody) return;
+    setGmailIsSending(true);
+    setGmailSendError(null);
+    setGmailSendSuccess(false);
+    try {
+      await sendGmailEmail(gmailRecipient, gmailSubject, gmailBody);
+      setGmailSendSuccess(true);
+      setTimeout(() => {
+        handleFetchEmails();
+      }, 1200);
+    } catch (err: any) {
+      console.error('Failed to send email:', err);
+      setGmailSendError(err.message || 'Failed to dispatch email');
+    } finally {
+      setGmailIsSending(false);
+    }
+  };
 
   // Check if there are any duplicate products by name or id
   const hasDuplicates = products.some((p, index) => {
@@ -311,6 +469,17 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({
           >
             <UserPlus className="w-4 h-4" />
             <span>Add Admin ({adminList.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('gmail_hub')}
+            className={`flex-1 md:flex-none px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
+              activeTab === 'gmail_hub' 
+                ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/20' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
+            }`}
+          >
+            <Mail className="w-4 h-4 text-rose-400" />
+            <span>Gmail Hub</span>
           </button>
         </div>
       </div>
@@ -1082,6 +1251,332 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-TAB: GMAIL INTEGRATION HUB */}
+      {activeTab === 'gmail_hub' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* Main Layout Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Left Column: Auth & Compose Email */}
+            <div className="lg:col-span-5 space-y-6">
+              
+              {/* Google Connection Status Card */}
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl pointer-events-none" />
+                
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
+                  Google Workspace Identity
+                </h3>
+
+                {gmailIsLoading ? (
+                  <div className="flex items-center justify-center py-6">
+                    <Loader2 className="w-6 h-6 text-rose-500 animate-spin mr-2" />
+                    <span className="text-xs text-slate-400 font-mono">Connecting secure gateway...</span>
+                  </div>
+                ) : !gmailUser ? (
+                  <div className="space-y-4 text-center py-4">
+                    <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mx-auto">
+                      <Mail className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-sm">Gmail API Integration Required</h4>
+                      <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 leading-relaxed">
+                        Authorize this app to send official order invoices and transaction confirmations directly using your secure Gmail mailbox.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleGmailLogin}
+                      className="inline-flex items-center space-x-2.5 bg-white hover:bg-slate-100 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-all shadow-md text-xs cursor-pointer active:scale-95"
+                    >
+                      {/* Google G Icon SVG */}
+                      <svg className="w-4 h-4" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61a5.66 5.66 0 0 1-2.45 3.72v3.08h3.95c2.31-2.13 3.63-5.27 3.63-8.65z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.95-3.08c-1.1.74-2.5 1.18-3.98 1.18-3.07 0-5.67-2.08-6.6-4.88H1.32v3.18A12 12 0 0 0 12 24z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.4 14.31A7.16 7.16 0 0 1 5 12c0-.8.14-1.58.4-2.31V6.51H1.32A11.94 11.94 0 0 0 0 12c0 2.05.52 4.02 1.32 5.78l4.08-3.47z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43A11.93 11.93 0 0 0 12 0 12 12 0 0 0 1.32 6.51l4.08 3.47c.93-2.8 3.53-4.88 6.6-4.88z"
+                        />
+                      </svg>
+                      <span>Connect Gmail Account</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3.5 bg-slate-950 rounded-2xl border border-slate-800">
+                    <div className="flex items-center space-x-3 min-w-0">
+                      {gmailUser.photoURL ? (
+                        <img 
+                          src={gmailUser.photoURL} 
+                          alt="Google Profile" 
+                          className="w-10 h-10 rounded-xl border border-rose-500/20 shrink-0"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-bold shrink-0">
+                          {gmailUser.displayName?.charAt(0) || 'G'}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-bold text-white truncate">{gmailUser.displayName || 'Google Account'}</h4>
+                        <p className="text-[10px] text-slate-400 font-mono truncate">{gmailUser.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleGmailLogout}
+                      className="p-2 text-slate-400 hover:text-white hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
+                      title="Disconnect Account"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Compose and Dispatch Box */}
+              {gmailUser && (
+                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                  <div className="border-b border-slate-800 pb-3">
+                    <h3 className="text-sm font-bold text-white flex items-center">
+                      <Send className="w-4 h-4 text-rose-400 mr-2" />
+                      Dispatch Custom Email Notification
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Send instantaneous escrow confirmation or status updates with complete HTML rendering.
+                    </p>
+                  </div>
+
+                  {gmailSendSuccess && (
+                    <div className="bg-green-500/10 border border-green-500/30 text-green-400 p-3 rounded-xl text-xs font-bold flex items-center space-x-2 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                      <span>Email successfully dispatched via Gmail API!</span>
+                    </div>
+                  )}
+
+                  {gmailSendError && (
+                    <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-xl text-xs font-bold flex items-center space-x-2 animate-in fade-in">
+                      <XCircle className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{gmailSendError}</span>
+                    </div>
+                  )}
+
+                  {/* Predefined templates selector */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Quick Template Presets
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {EMAIL_TEMPLATES.map((tmpl, tIdx) => (
+                        <button
+                          key={tIdx}
+                          type="button"
+                          onClick={() => {
+                            setGmailSubject(tmpl.subject);
+                            setGmailBody(tmpl.body);
+                            setGmailSendSuccess(false);
+                          }}
+                          className="px-2.5 py-1.5 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white text-[10px] font-bold rounded-lg border border-slate-800 transition-colors cursor-pointer"
+                        >
+                          {tmpl.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleSendCustomEmail} className="space-y-3.5">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        Recipient Address *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={gmailRecipient}
+                        onChange={(e) => setGmailRecipient(e.target.value)}
+                        placeholder="buyer@gmail.com"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500 transition-colors font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        Subject Line *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={gmailSubject}
+                        onChange={(e) => setGmailSubject(e.target.value)}
+                        placeholder="Order Confirmation"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        HTML Body Markup *
+                      </label>
+                      <textarea
+                        rows={7}
+                        required
+                        value={gmailBody}
+                        onChange={(e) => setGmailBody(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-rose-500 transition-colors font-mono resize-none leading-relaxed"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={gmailIsSending}
+                      className="w-full bg-rose-600 hover:bg-rose-500 disabled:bg-rose-800 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-xl transition-all shadow-lg shadow-rose-600/20 flex items-center justify-center space-x-2 text-xs cursor-pointer active:scale-95"
+                    >
+                      {gmailIsSending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Dispatching RFC 822 MIME payload...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          <span>Transmit Secure Invoice Email</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Live Inbox Viewer */}
+            <div className="lg:col-span-7">
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-white flex items-center">
+                        <Inbox className="w-5 h-5 text-rose-400 mr-2" />
+                        Live Synchronized Gmail Ledger
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Query live emails with keywords matching escrow receipts directly from your account.
+                      </p>
+                    </div>
+
+                    {gmailUser && (
+                      <button
+                        onClick={handleFetchEmails}
+                        disabled={gmailIsFetching}
+                        className="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 text-xs font-bold text-slate-200 hover:text-white border border-slate-800 rounded-xl transition-all flex items-center space-x-2 cursor-pointer self-start sm:self-auto disabled:opacity-50"
+                      >
+                        <Loader2 className={`w-3.5 h-3.5 ${gmailIsFetching ? 'animate-spin text-rose-400' : ''}`} />
+                        <span>{gmailIsFetching ? 'Syncing...' : 'Sync Inbox'}</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {gmailFetchError && (
+                    <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-xl text-xs font-bold mt-4">
+                      {gmailFetchError}
+                    </div>
+                  )}
+
+                  {!gmailUser ? (
+                    <div className="text-center py-20 text-slate-500 space-y-3">
+                      <Inbox className="w-12 h-12 mx-auto text-slate-700" />
+                      <p className="text-xs max-w-xs mx-auto">
+                        Please authorize your Google account in the left panel to synchronize your live mailbox here.
+                      </p>
+                    </div>
+                  ) : gmailIsFetching && gmailMessages.length === 0 ? (
+                    <div className="text-center py-20 text-slate-400 font-mono text-xs space-y-3 flex flex-col items-center">
+                      <Loader2 className="w-8 h-8 text-rose-500 animate-spin" />
+                      <span>Synchronizing live Gmail ledger nodes...</span>
+                    </div>
+                  ) : gmailMessages.length === 0 ? (
+                    <div className="text-center py-20 text-slate-500 space-y-3">
+                      <Inbox className="w-12 h-12 mx-auto text-slate-700" />
+                      <p className="text-xs max-w-xs mx-auto">
+                        No trade-related emails found. Try sending a secure invoice to see it indexed here in real time.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-800/60 max-h-[500px] overflow-y-auto pr-1 mt-4">
+                      {gmailMessages.map((msg) => (
+                        <div
+                          key={msg.id}
+                          onClick={() => setGmailSelectedMsg(msg)}
+                          className={`py-3.5 px-3 rounded-2xl cursor-pointer hover:bg-slate-950/60 transition-all flex items-start gap-3.5 border border-transparent ${
+                            gmailSelectedMsg?.id === msg.id ? 'bg-slate-950/80 border-rose-500/20 shadow-md' : ''
+                          }`}
+                        >
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500/10 to-pink-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-extrabold shrink-0">
+                            {msg.from?.charAt(0).toUpperCase() || 'M'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-white truncate max-w-[150px]">{msg.from || 'Unknown'}</span>
+                              <span className="text-[10px] text-slate-500 font-mono">{msg.date ? new Date(msg.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                            </div>
+                            <h4 className="text-xs font-bold text-rose-300 mt-1 truncate">{msg.subject}</h4>
+                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">{msg.snippet}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected email contents viewer overlay / box */}
+                {gmailSelectedMsg && (
+                  <div className="bg-slate-950 rounded-2xl border border-slate-800 p-5 mt-6 relative animate-in slide-in-from-bottom-4 duration-300">
+                    <button
+                      onClick={() => setGmailSelectedMsg(null)}
+                      className="absolute top-4 right-4 text-xs font-bold text-slate-500 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Close Viewer
+                    </button>
+
+                    <div className="space-y-4">
+                      <div className="border-b border-slate-800 pb-3">
+                        <span className="text-[9px] font-bold font-mono text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded uppercase tracking-wider">
+                          RFC 822 SECURE VIEW
+                        </span>
+                        <h4 className="text-sm font-bold text-white mt-2 leading-snug">
+                          {gmailSelectedMsg.subject}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mt-2 font-mono">
+                          <span><strong>From:</strong> {gmailSelectedMsg.from}</span>
+                          <span>•</span>
+                          <span><strong>Date:</strong> {gmailSelectedMsg.date}</span>
+                        </div>
+                      </div>
+
+                      {/* Display the html contents or text securely */}
+                      <div className="bg-slate-900/40 border border-slate-900 rounded-xl p-4 text-xs text-slate-300 max-h-60 overflow-y-auto leading-relaxed overflow-x-auto">
+                        {gmailSelectedMsg.body?.includes('<') ? (
+                          <div dangerouslySetInnerHTML={{ __html: gmailSelectedMsg.body }} />
+                        ) : (
+                          <pre className="whitespace-pre-wrap font-sans font-medium">{gmailSelectedMsg.body}</pre>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
       )}
