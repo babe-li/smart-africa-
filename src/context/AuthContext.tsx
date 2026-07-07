@@ -97,31 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return DEFAULT_ADMINS;
   });
 
-  const [userMovements, setUserMovements] = useState<UserMovementLog[]>(() => {
-    const saved = localStorage.getItem('smarttrade_user_movements');
-    if (saved) {
-      try { return JSON.parse(saved); } catch { return INITIAL_USER_MOVEMENTS; }
-    }
-    return INITIAL_USER_MOVEMENTS;
-  });
-
-  const logUserMovement = (actionType: UserMovementLog['actionType'], description: string) => {
-    setUserMovements(prev => {
-      const activeUser = user || { email: 'guest@smarttrade.co.tz', name: 'Guest Visitor' };
-      const newLog: UserMovementLog = {
-        id: 'mov-' + Math.random().toString(36).substring(2, 9),
-        timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }) + ' EAT',
-        userEmail: activeUser.email,
-        userName: activeUser.name,
-        actionType,
-        description,
-        ipOrDevice: navigator.userAgent.includes('Mobile') ? 'Mobile Enclave Client' : 'Desktop Enclave Client'
-      };
-      const updated = [newLog, ...prev.slice(0, 99)];
-      localStorage.setItem('smarttrade_user_movements', JSON.stringify(updated));
-      return updated;
-    });
-  };
+  const [userMovements, setUserMovements] = useState<UserMovementLog[]>([]);
 
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('smarttrade_current_user');
@@ -151,11 +127,97 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [biometricStatus, setBiometricStatus] = useState<BiometricStatus>(
     user?.fingerprintRegistered ? 'ready' : 'unregistered'
   );
-  const [securityLogs, setSecurityLogs] = useState<SecurityEventLog[]>(INITIAL_SECURITY_LOGS);
-  const [biometricAttemptLogs, setBiometricAttemptLogs] = useState<BiometricAttemptLog[]>(INITIAL_BIOMETRIC_LOGS);
+  const [securityLogs, setSecurityLogs] = useState<SecurityEventLog[]>([]);
+  const [biometricAttemptLogs, setBiometricAttemptLogs] = useState<BiometricAttemptLog[]>([]);
   const [swahiliMode, setSwahiliMode] = useState<boolean>(false);
   const [webAuthnLogs, setWebAuthnLogs] = useState<string[]>(['System initialized. WebAuthn platform ready.']);
   const [isHardwareSupported, setIsHardwareSupported] = useState<boolean | null>(null);
+
+  // Fetch telemetry logs from Cloud SQL on mount
+  useEffect(() => {
+    fetch('/api/security-logs')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setSecurityLogs(data);
+      })
+      .catch(err => {
+        console.error("Failed to fetch security logs", err);
+        setSecurityLogs(INITIAL_SECURITY_LOGS);
+      });
+
+    fetch('/api/biometric-logs')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setBiometricAttemptLogs(data);
+      })
+      .catch(err => {
+        console.error("Failed to fetch biometric logs", err);
+        setBiometricAttemptLogs(INITIAL_BIOMETRIC_LOGS);
+      });
+
+    fetch('/api/user-movements')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setUserMovements(data);
+      })
+      .catch(err => {
+        console.error("Failed to fetch user movements", err);
+        setUserMovements(INITIAL_USER_MOVEMENTS);
+      });
+  }, []);
+
+  // Sync user profile with Cloud SQL when authenticated user changes
+  useEffect(() => {
+    if (user) {
+      fetch('/api/users/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.id,
+          email: user.email,
+          name: user.name,
+          phone: user.phone,
+          location: user.location,
+          role: user.role
+        })
+      })
+      .catch(err => console.error("Failed to sync user profile to Cloud SQL:", err));
+    }
+  }, [user?.id, user?.email, user?.name, user?.phone, user?.location, user?.role]);
+
+  const logUserMovement = (actionType: UserMovementLog['actionType'], description: string) => {
+    const activeUser = user || { email: 'guest@smarttrade.co.tz', name: 'Guest Visitor' };
+    const ipOrDevice = navigator.userAgent.includes('Mobile') ? 'Mobile Enclave Client' : 'Desktop Enclave Client';
+
+    fetch('/api/user-movements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userEmail: activeUser.email,
+        userName: activeUser.name,
+        actionType,
+        description,
+        ipOrDevice
+      })
+    })
+    .then(res => res.json())
+    .then(newMovement => {
+      setUserMovements(prev => [newMovement, ...prev.filter(x => x.id !== newMovement.id)].slice(0, 99));
+    })
+    .catch(err => {
+      console.error("Failed to log user movement to Cloud SQL", err);
+      const fallbackLog: UserMovementLog = {
+        id: 'mov-' + Math.random().toString(36).substring(2, 9),
+        timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }) + ' EAT',
+        userEmail: activeUser.email,
+        userName: activeUser.name,
+        actionType,
+        description,
+        ipOrDevice
+      };
+      setUserMovements(prev => [fallbackLog, ...prev.slice(0, 99)]);
+    });
+  };
 
   useEffect(() => {
     checkRealBiometricHardwareAvailable().then(avail => {
@@ -168,23 +230,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const addSecurityLog = (log: Omit<SecurityEventLog, 'id' | 'timestamp'>) => {
-    const newLog: SecurityEventLog = {
-      ...log,
-      id: 'log-' + Math.random().toString(36).substring(2, 9),
-      timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
-    };
-    setSecurityLogs(prev => [newLog, ...prev.slice(0, 49)]);
+    fetch('/api/security-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log)
+    })
+    .then(res => res.json())
+    .then(newLog => {
+      setSecurityLogs(prev => [newLog, ...prev.filter(x => x.id !== newLog.id)].slice(0, 49));
+    })
+    .catch(err => {
+      console.error("Failed to log security event to Cloud SQL", err);
+      const fallbackLog: SecurityEventLog = {
+        ...log,
+        id: 'log-' + Math.random().toString(36).substring(2, 9),
+        timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
+      };
+      setSecurityLogs(prev => [fallbackLog, ...prev.slice(0, 49)]);
+    });
   };
 
   const addBiometricAttemptLog = (log: Omit<BiometricAttemptLog, 'id' | 'timestamp'>) => {
-    const now = new Date();
-    const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${now.toLocaleTimeString('en-US', { hour12: false })}`;
-    const newLog: BiometricAttemptLog = {
-      ...log,
-      id: 'bio-' + Math.random().toString(36).substring(2, 9),
-      timestamp: ts
-    };
-    setBiometricAttemptLogs(prev => [newLog, ...prev]);
+    fetch('/api/biometric-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log)
+    })
+    .then(res => res.json())
+    .then(newLog => {
+      setBiometricAttemptLogs(prev => [newLog, ...prev.filter(x => x.id !== newLog.id)]);
+    })
+    .catch(err => {
+      console.error("Failed to log biometric attempt to Cloud SQL", err);
+      const now = new Date();
+      const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${now.toLocaleTimeString('en-US', { hour12: false })}`;
+      const fallbackLog: BiometricAttemptLog = {
+        ...log,
+        id: 'bio-' + Math.random().toString(36).substring(2, 9),
+        timestamp: ts
+      };
+      setBiometricAttemptLogs(prev => [fallbackLog, ...prev]);
+    });
   };
 
   const loginAsAdminDirectly = () => {
