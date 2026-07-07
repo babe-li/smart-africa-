@@ -40,12 +40,24 @@ import {
 interface AdminPortalViewProps {
   products: Product[];
   onAddProduct: (product: Product) => void;
+  onRemoveProduct: (productId: string) => void;
+  onRemoveDuplicates: () => void;
 }
 
-export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAddProduct }) => {
+export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ 
+  products, 
+  onAddProduct,
+  onRemoveProduct,
+  onRemoveDuplicates
+}) => {
   const { user, adminList, addAdminAccount, userMovements, swahiliMode, biometricAttemptLogs } = useAuth();
   const { cart, totalItems, subtotalTzs, orders } = useCart();
   const [activeTab, setActiveTab] = useState<'movements' | 'inventory' | 'tcp_security' | 'biometric_logs' | 'tam_analyzer' | 'sales_analytics' | 'add_product' | 'add_admin' | 'security_health'>('movements');
+
+  // Check if there are any duplicate products by name or id
+  const hasDuplicates = products.some((p, index) => {
+    return products.findIndex(x => x.name.toLowerCase().trim() === p.name.toLowerCase().trim() || x.id === p.id) !== index;
+  });
 
   // Biometric log filter
   const [biometricFilter, setBiometricFilter] = useState<string>('ALL');
@@ -557,7 +569,17 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                     : `Complete inventory tally of all ${products.length} products active across Tanzanian regions.`}
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                {hasDuplicates && (
+                  <button
+                    onClick={onRemoveDuplicates}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold transition-all shadow-md active:scale-95"
+                    title={swahiliMode ? 'Ondoa bidhaa zote zenye majina sawa' : 'Deduplicate products with identical names'}
+                  >
+                    <Layers className="w-3.5 h-3.5 text-slate-950 shrink-0" />
+                    <span>{swahiliMode ? 'Ondoa Nakala Rudufu' : 'Remove All Duplicates'}</span>
+                  </button>
+                )}
                 <span className="bg-blue-500/20 text-blue-400 text-xs font-bold font-mono px-3 py-1.5 rounded-xl border border-blue-500/30">
                   Total Present: {products.length} Products
                 </span>
@@ -574,6 +596,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                       <th className="py-3 px-4 text-right">Price (TSh)</th>
                       <th className="py-3 px-4 text-center">Stock Status</th>
                       <th className="py-3 px-4 text-center">Trust and Security</th>
+                      <th className="py-3 px-4 text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 font-mono">
@@ -602,6 +625,19 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ products, onAd
                             <ShieldCheck className="w-3.5 h-3.5" />
                             <span>Verified</span>
                           </span>
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={() => {
+                              if (confirm(swahiliMode ? `Ondoa "${p.name}" kutoka stoo?` : `Are you sure you want to remove "${p.name}"?`)) {
+                                onRemoveProduct(p.id);
+                              }
+                            }}
+                            className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-all"
+                            title={swahiliMode ? 'Ondoa Bidhaa' : 'Remove Product'}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </td>
                       </tr>
                     ))}

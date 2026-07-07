@@ -49,6 +49,37 @@ const MainApplication: React.FC = () => {
     logUserMovement('ADD_PRODUCT', `Listed new product: ${newProduct.name} (TSh ${newProduct.priceTzs.toLocaleString()})`);
   };
 
+  const handleRemoveProduct = (productId: string) => {
+    setProducts(prev => {
+      const target = prev.find(p => p.id === productId);
+      const updated = prev.filter(p => p.id !== productId);
+      localStorage.setItem('smarttrade_products', JSON.stringify(updated));
+      if (target) {
+        logUserMovement('REMOVE_PRODUCT', `Removed product from catalog: ${target.name}`);
+      }
+      return updated;
+    });
+  };
+
+  const handleRemoveDuplicates = () => {
+    setProducts(prev => {
+      const seenNames = new Set<string>();
+      const seenIds = new Set<string>();
+      const updated = prev.filter(p => {
+        const lowerName = p.name.toLowerCase().trim();
+        if (seenNames.has(lowerName) || seenIds.has(p.id)) {
+          return false;
+        }
+        seenNames.add(lowerName);
+        seenIds.add(p.id);
+        return true;
+      });
+      localStorage.setItem('smarttrade_products', JSON.stringify(updated));
+      return updated;
+    });
+    logUserMovement('DEDUPLICATE_PRODUCTS', 'Deduplicated product catalog, leaving only unique items.');
+  };
+
   React.useEffect(() => {
     if ((activeTab === 'admin_portal' || activeTab === 'orders') && user?.role !== 'admin') {
       setActiveTab('store');
@@ -145,6 +176,8 @@ const MainApplication: React.FC = () => {
               <AdminPortalView
                 products={products}
                 onAddProduct={handleAddProduct}
+                onRemoveProduct={handleRemoveProduct}
+                onRemoveDuplicates={handleRemoveDuplicates}
               />
             </motion.div>
           )}
