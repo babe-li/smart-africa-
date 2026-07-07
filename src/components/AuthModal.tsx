@@ -56,12 +56,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div>
               <h3 className="font-bold text-sm text-white">
                 {mode === 'login'
-                  ? (swahiliMode ? 'Ingia kwenye Akaunti (Secure Login)' : 'Secure Account Sign In')
-                  : (swahiliMode ? 'Fungua Akaunti Mpya' : 'Secure Registration')}
+                  ? (swahiliMode ? 'Ingia kwenye Akaunti' : 'Sign In')
+                  : (swahiliMode ? 'Fungua Akaunti Mpya' : 'Create Account')}
               </h3>
-              <p className="text-[10px] text-slate-400">
-                TCP Enclave • SHA-256 Salted Passwords
-              </p>
             </div>
           </div>
           <button

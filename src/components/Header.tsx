@@ -122,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Biometric Hardware Security Enclave"
           >
             <Fingerprint className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-            <span>{swahiliMode ? 'Kihisi Dole' : 'TCP Secured'}</span>
+            <span>{swahiliMode ? 'Kihisi Dole' : 'Biometrics'}</span>
           </button>
 
           {/* Account Login / User Profile */}
@@ -211,16 +211,16 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Sub-header Category Ribbon */}
-      <div className="bg-slate-900/90 text-slate-400 text-xs px-6 py-2.5 flex items-center space-x-8 overflow-x-auto border-t border-slate-800">
-        <button
-          onClick={() => setActiveTab('store')}
-          className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
-            activeTab === 'store' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
-          }`}
-        >
-          🏷️ {swahiliMode ? 'Duka Kuu (Featured Deals)' : 'Featured Deals'}
-        </button>
-        {user?.role === 'admin' && (
+      {user?.role === 'admin' && (
+        <div className="bg-slate-900/90 text-slate-400 text-xs px-6 py-2.5 flex items-center space-x-8 overflow-x-auto border-t border-slate-800">
+          <button
+            onClick={() => setActiveTab('store')}
+            className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
+              activeTab === 'store' ? 'text-blue-400 border-b-2 border-blue-500 pb-1 font-bold' : 'hover:text-white'
+            }`}
+          >
+            🏪 {swahiliMode ? 'Duka' : 'Store'}
+          </button>
           <button
             onClick={() => setActiveTab('orders')}
             className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
@@ -229,8 +229,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             📦 {swahiliMode ? 'Oda na Risiti zangu' : 'Escrow Orders and Receipts'}
           </button>
-        )}
-        {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('admin_portal')}
             className={`font-semibold flex items-center whitespace-nowrap transition-colors ${
@@ -241,12 +239,8 @@ export const Header: React.FC<HeaderProps> = ({
           >
             👑 {swahiliMode ? 'Utawala (Admin Enclave)' : 'Admin Enclave and Telemetry'}
           </button>
-        )}
-        <span className="text-slate-800 hidden md:inline">|</span>
-        <span className="text-xs text-slate-500 font-mono hidden xl:inline">
-          🔒 SSL/TLS 1.3 End-to-End Encrypted Gateway
-        </span>
-      </div>
+        </div>
+      )}
     </header>
   );
 };

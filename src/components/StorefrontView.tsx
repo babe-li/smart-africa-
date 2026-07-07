@@ -56,22 +56,6 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
               ? 'Biashara Salama na Amini kwa Tanzania'
               : 'Secure Commerce Backed by TCP Enclave and Hardware Biometrics'}
           </h1>
-
-          {/* Quick Trust Highlights */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex items-center space-x-2">
-              <ShieldCheck className="w-5 h-5 text-blue-400 shrink-0" />
-              <span className="text-xs font-bold text-slate-200">100% Escrow Refund</span>
-            </div>
-            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex items-center space-x-2">
-              <Fingerprint className="w-5 h-5 text-blue-400 shrink-0" />
-              <span className="text-xs font-bold text-slate-200">TouchID WebAuthn</span>
-            </div>
-            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex items-center space-x-2 col-span-2 sm:col-span-1">
-              <Truck className="w-5 h-5 text-blue-400 shrink-0" />
-              <span className="text-xs font-bold text-slate-200">SmartDelivery Dar/Arusha</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -139,39 +123,6 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           ))}
         </div>
       )}
-
-      {/* Trust Guarantee Section */}
-      <div className="bg-slate-900 text-slate-200 rounded-2xl p-6 border border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl">
-        <div className="space-y-1">
-          <h4 className="font-bold text-blue-400 text-sm flex items-center">
-            <Award className="w-4 h-4 mr-1.5 text-blue-500" />
-            1. Zero Online Payment Fraud
-          </h4>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Escrow Buyer Protection ensures funds are never released to unverified third parties until delivery is confirmed by the buyer.
-          </p>
-        </div>
-
-        <div className="space-y-1">
-          <h4 className="font-bold text-blue-400 text-sm flex items-center">
-            <Fingerprint className="w-4 h-4 mr-1.5 text-blue-500" />
-            2. Hardware Biometric Authentication
-          </h4>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            No more forgotten passwords. FIDO2 WebAuthn utilizes your smartphone fingerprint or Face ID sensor in isolation.
-          </p>
-        </div>
-
-        <div className="space-y-1">
-          <h4 className="font-bold text-blue-400 text-sm flex items-center">
-            <ShieldCheck className="w-4 h-4 mr-1.5 text-blue-500" />
-            3. Trusted Computing Platform (TCP)
-          </h4>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Hardware-level PCR verification blocks unauthorized access attempts, session hijacking, and XSS/SQL Injection vectors.
-          </p>
-        </div>
-      </div>
     </div>
   );
 };
